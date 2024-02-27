@@ -1,10 +1,11 @@
 <template>
-  <div></div>
+  <div id="threejs" class="container"></div>
 </template>
 
 <script setup lang="ts">
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { onMounted, ref } from 'vue'
 
 // console.log(THREE);
 
@@ -84,16 +85,28 @@ scene.add(pointLight)
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer()
 // 设置渲染的尺寸大小
-renderer.setSize(window.innerWidth, window.innerHeight)
+renderer.setSize(window.innerWidth, window.innerHeight - 60)
 // console.log(renderer);
-// 将webgl渲染的canvas内容添加到body
-document.body.appendChild(renderer.domElement)
 
+onMounted(() => {
+  // 将webgl渲染的canvas内容添加到body
+  const threeContainer = document.getElementById('threejs')
+  threeContainer!.appendChild(renderer.domElement)
+})
 // 使用渲染器，通过相机将场景渲染进来
 // renderer.render(scene, camera)
 const controls = new OrbitControls(camera, renderer.domElement)
 controls.addEventListener('change', () => {
   renderer.render(scene, camera)
 })
+// controls.addEventListener('change', function () {
+//   // 浏览器控制台查看相机位置变化
+//   console.log('camera.position', camera.position)
+// })
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.container {
+  width: 100%;
+  height: 100%;
+}
+</style>
