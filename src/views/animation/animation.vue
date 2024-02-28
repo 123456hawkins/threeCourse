@@ -1,9 +1,3 @@
-import type { disposeEmitNodes } from 'typescript'; import type {
-disposeEmitNodes } from 'typescript'; import type { disposeEmitNodes } from
-'typescript'; import type { disposeEmitNodes } from 'typescript'; import type {
-disposeEmitNodes } from 'typescript'; import type { disposeEmitNodes } from
-'typescript'; import type { disposeEmitNodes } from 'typescript'; import type {
-render } from 'vue';
 <template>
   <div id="threejs" class="container"></div>
 </template>
@@ -20,7 +14,7 @@ const scene = new THREE.Scene()
 // 2、创建相机
 const camera = new THREE.PerspectiveCamera(
   75,
-  window.innerWidth / window.innerHeight,
+  window.innerWidth / (window.innerHeight - 60),
   0.1,
   1000
 )
@@ -125,7 +119,7 @@ onUnmounted(() => {
 })
 window.addEventListener('resize', () => {
   // 修改相机配置
-  camera.aspect = window.innerWidth / window.innerHeight
+  camera.aspect = window.innerWidth / (window.innerHeight - 60)
   // 更新投影矩阵
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight - 60)
