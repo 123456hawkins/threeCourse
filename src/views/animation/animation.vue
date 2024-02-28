@@ -1,3 +1,4 @@
+import type { render } from 'vue';
 <template>
   <div id="threejs" class="container"></div>
 </template>
@@ -66,8 +67,19 @@ scene.add(pointLight)
 
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer()
+
+// 渲染函数
+// 循环渲染事件
+const clock = new THREE.Clock()
 const render = () => {
+  const spt = clock.getDelta() * 1000
+  // console.log('两帧渲染间隔:' + spt + 'ms')
+  // console.log('FPS:', 1000 / spt)
   renderer.render(scene, camera)
+  cube.rotateY(0.01)
+  cube2.rotateX(0.02)
+  cube3.rotateZ(0.03)
+  requestAnimationFrame(render)
 }
 onMounted(() => {
   // 将webgl渲染的canvas内容添加到body
@@ -79,18 +91,20 @@ onMounted(() => {
     render()
   })
 })
-// 使用渲染器，通过相机将场景渲染进来
-// renderer.render(scene, camera)
-const controls = new OrbitControls(camera, renderer.domElement)
-controls.addEventListener('change', () => {
-  renderer.render(scene, camera)
-})
 window.addEventListener('resize', () => {
   // 修改相机配置
   camera.aspect = window.innerWidth / window.innerHeight
   // 更新投影矩阵
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight - 60)
+
+})
+// 使用渲染器，通过相机将场景渲染进来
+// 使用了循环渲染事件，就不用再通过事件change执行了
+// renderer.render(scene, camera)
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.addEventListener('change', () => {
+  renderer.render(scene, camera)
 })
 </script>
 <style scoped lang="scss">

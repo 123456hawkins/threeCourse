@@ -105,16 +105,17 @@ scene.add(dirLightHelper)
 
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer()
-
+const render = () => {
+  renderer.render(scene, camera)
+}
 onMounted(() => {
   // 将webgl渲染的canvas内容添加到body
   const threeContainer = document.getElementById('threejs')
   nextTick(() => {
-    requestAnimationFrame(() => {
-      // 设置渲染的尺寸大小
-      renderer.setSize(window.innerWidth, window.innerHeight - 60)
-      threeContainer!.appendChild(renderer.domElement)
-    })
+    // 设置渲染的尺寸大小
+    renderer.setSize(window.innerWidth, window.innerHeight - 60)
+    threeContainer!.appendChild(renderer.domElement)
+    render()
   })
 })
 // 使用渲染器，通过相机将场景渲染进来
@@ -123,10 +124,15 @@ const controls = new OrbitControls(camera, renderer.domElement)
 controls.addEventListener('change', () => {
   renderer.render(scene, camera)
 })
-// controls.addEventListener('change', function () {
-//   // 浏览器控制台查看相机位置变化
-//   console.log('camera.position', camera.position)
-// })
+window.addEventListener('resize', () => {
+  // 修改相机配置
+  camera.aspect = window.innerWidth / window.innerHeight
+  // 更新投影矩阵
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight - 60)
+
+})
+
 </script>
 <style scoped lang="scss">
 .container {

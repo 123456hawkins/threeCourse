@@ -13,7 +13,7 @@ export const routeList = [
     name: 'orbitControls',
     component: () => import('../views/orbitControls/orbitControls.vue'),
     meta: {
-      name: "home",
+      name: "orbitControls",
       hidden: false
     }
   },
@@ -23,7 +23,16 @@ export const routeList = [
     name: 'lightTest',
     component: () => import('../views/lightTest/lightTest.vue'),
     meta: {
-      name: "home",
+      name: "lightTest",
+      hidden: false
+    }
+  },
+  {
+    path: '/animation',
+    name: 'animation',
+    component: () => import('../views/animation/animation.vue'),
+    meta: {
+      name: "animation",
       hidden: false
     }
   }
