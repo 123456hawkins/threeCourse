@@ -35,6 +35,15 @@ export const routeList = [
       name: "animation",
       hidden: false
     }
-  }
+  },
+  {
+    path: '/arrayCube',
+    name: 'arrayCube',
+    component: () => import('../views/arrayCube/arrayCube.vue'),
+    meta: {
+      name: "arrayCube",
+      hidden: false
+    }
+  },
 
 ]

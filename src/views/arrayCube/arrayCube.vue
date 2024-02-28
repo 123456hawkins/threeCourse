@@ -1,3 +1,7 @@
+import type { disposeEmitNodes } from 'typescript'; import type { ThreeMFLoader
+} from 'three/examples/jsm/Addons.js'; import type { ThreeMFLoader } from
+'three/examples/jsm/Addons.js'; import type { ThreeMFLoader } from
+'three/examples/jsm/Addons.js';
 <template>
   <div id="threejs" class="container"></div>
 </template>
@@ -11,8 +15,6 @@ const stats0 = new Stats()
 const stats1 = new Stats()
 const stats2 = new Stats()
 
-// 设置定时器id
-let animationId
 stats0.showPanel(0)
 stats1.showPanel(1)
 stats2.showPanel(2)
@@ -30,7 +32,7 @@ const camera = new THREE.PerspectiveCamera(
 )
 
 // 设置相机位置
-camera.position.set(10, 10, 10)
+camera.position.set(60, 60, 60)
 camera.lookAt(0, 0, 0)
 scene.add(camera)
 
@@ -38,34 +40,12 @@ scene.add(camera)
 const axesHelper = new THREE.AxesHelper(150)
 scene.add(axesHelper)
 
-// 添加物体
-// 创建几何体
-const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
-const cubeGeometry2 = new THREE.BoxGeometry(1, 1, 1)
-const cubeGeometry3 = new THREE.BoxGeometry(1, 1, 1)
-
-// 漫反射材质
-const cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xff3300 })
-const cubeMaterial2 = new THREE.MeshLambertMaterial({ color: 0xffff00 })
-const cubeMaterial3 = new THREE.MeshLambertMaterial({ color: 0x11ff00 })
-// cubeMaterial.side = THREE.DoubleSide
-// cubeMaterial2.side = THREE.DoubleSide
-// cubeMaterial3.side = THREE.DoubleSide
-
-// 根据几何体和材质创建物体
-const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-const cube2 = new THREE.Mesh(cubeGeometry2, cubeMaterial2)
-const cube3 = new THREE.Mesh(cubeGeometry3, cubeMaterial3)
-
-// 设置几何体位置
-cube.position.set(1, 0, 0)
-cube2.position.set(0, 1, 0)
-cube3.position.set(0, 0, 1)
-
-// 将几何体添加到场景中
-scene.add(cube)
-scene.add(cube2)
-scene.add(cube3)
+const geometry = new THREE.BoxGeometry(1, 1, 1)
+const material = new THREE.MeshLambertMaterial({
+  color: 0x00ffff, //设置材质颜色
+  transparent: true, //开启透明
+  opacity: 0.8, //设置透明度
+})
 
 // 设置点光源
 // 参数1：0xffffff是纯白光,表示光源颜色
@@ -85,20 +65,45 @@ const renderer = new THREE.WebGLRenderer({
 
 // 渲染函数
 // 循环渲染事件
-// const clock = new THREE.Clock()
 const render = () => {
-  // const spt = clock.getDelta() * 1000
-  // console.log('两帧渲染间隔:' + spt + 'ms')
-  // console.log('FPS:', 1000 / spt)
   stats0.update()
   stats1.update()
   stats2.update()
   renderer.render(scene, camera)
-  cube.rotateY(0.01)
-  cube2.rotateX(0.02)
-  cube3.rotateZ(0.03)
-  animationId = requestAnimationFrame(render)
 }
+const addCube = (i, j, k) => {
+  const mesh = new THREE.Mesh(geometry, material)
+  mesh.position.set(i * 2, j * 2, k * 2)
+  scene.add(mesh)
+}
+
+const addCubesWithDelay = (maxI, maxJ, maxK) => {
+  let i = 0,
+    j = 0,
+    k = 0
+  const addCubeDelayed = () => {
+    addCube(i, j, k)
+    render()
+    k++
+    if (k === maxK) {
+      k = 0
+      j++
+      if (j === maxJ) {
+        j = 0
+        i++
+        if (i === maxI) {
+          // 所有循环完成，退出
+          return
+        }
+      }
+    }
+    // 递归调用，等待下一帧动画前再执行
+    requestAnimationFrame(addCubeDelayed)
+  }
+  // 启动第一帧动画
+  addCubeDelayed()
+}
+
 const addStatsDom = () => {
   // 设置 Stats 的位置
   stats0.dom.style.position = 'fixed'
@@ -130,29 +135,17 @@ onMounted(() => {
     renderer.setSize(window.innerWidth, window.innerHeight - 60)
     threeContainer!.appendChild(renderer.domElement)
     addStatsDom()
-    render()
+    // render()
+    addCubesWithDelay(10, 10, 10)
   })
-  // console.log('render', renderer)
-  // console.log('scene', scene)
-  // console.log('mesh', cube)
-  // console.log('material', cubeMaterial)
-  // console.log('geometry', cubeGeometry)
 })
 // 退出页面释放资源
 const relaseResource = () => {
-  // requsetAnimationFrame销毁
-  cancelAnimationFrame(animationId)
   removeStatsDom()
   // 渲染器销毁
   renderer.dispose()
-  // Material销毁
-  cubeMaterial.dispose()
-  cubeMaterial2.dispose()
-  cubeMaterial3.dispose()
-  // Geometry销毁
-  cubeGeometry.dispose()
-  cubeGeometry2.dispose()
-  cubeGeometry3.dispose()
+  material.dispose()
+  geometry.dispose()
 }
 onUnmounted(() => {
   relaseResource()
@@ -166,7 +159,6 @@ window.addEventListener('resize', () => {
 })
 // 使用渲染器，通过相机将场景渲染进来
 // 使用了循环渲染事件，就不用再通过事件change执行了
-// renderer.render(scene, camera)
 const controls = new OrbitControls(camera, renderer.domElement)
 controls.addEventListener('change', () => {
   renderer.render(scene, camera)
