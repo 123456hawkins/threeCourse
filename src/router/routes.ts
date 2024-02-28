@@ -45,5 +45,14 @@ export const routeList = [
       hidden: false
     }
   },
+  {
+    path: '/commonGeo',
+    name: 'commonGeo',
+    component: () => import('../views/commonGeo/commonGeo.vue'),
+    meta: {
+      name: "commonGeo",
+      hidden: false
+    }
+  },
 
 ]
