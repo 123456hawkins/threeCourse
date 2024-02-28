@@ -2,16 +2,26 @@ export const routeList = [
   {
     path: '/',
     name: 'home',
-    redirect: '/threeJsPage',
+    redirect: '/orbitControls',
     meta: {
       name: "home",
       hidden: true
     }
   },
   {
-    path: '/threeJsPage',
-    name: 'threeJsPage',
-    component: () => import('../views/threeJsPage.vue'),
+    path: '/orbitControls',
+    name: 'orbitControls',
+    component: () => import('../views/orbitControls/orbitControls.vue'),
+    meta: {
+      name: "home",
+      hidden: false
+    }
+  },
+
+  {
+    path: '/lightTest',
+    name: 'lightTest',
+    component: () => import('../views/lightTest/lightTest.vue'),
     meta: {
       name: "home",
       hidden: false

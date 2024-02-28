@@ -5,11 +5,8 @@
 <script setup lang="ts">
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { onMounted, ref } from 'vue'
 
-// console.log(THREE);
-
-// 目标：了解three.js最基本的内容
+import { onMounted, ref, nextTick } from 'vue'
 
 // 1、创建场景
 const scene = new THREE.Scene()
@@ -37,23 +34,6 @@ const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
 const cubeGeometry2 = new THREE.BoxGeometry(1, 1, 1)
 const cubeGeometry3 = new THREE.BoxGeometry(1, 1, 1)
 
-//不受光照影响材质
-// const cubeMaterial = new THREE.MeshBasicMaterial({
-//   color: 0xff3300,
-//   transparent: true, //开启透明
-//   opacity: 0.7,
-// })
-// const cubeMaterial2 = new THREE.MeshBasicMaterial({
-//   color: 0xffff00,
-//   transparent: true, //开启透明
-//   opacity: 0.7,
-// })
-// const cubeMaterial3 = new THREE.MeshBasicMaterial({
-//   color: 0x11ff00,
-//   transparent: true, //开启透明
-//   opacity: 0.7,
-// })
-
 // 漫反射材质
 const cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xff3300 })
 const cubeMaterial2 = new THREE.MeshLambertMaterial({ color: 0xffff00 })
@@ -80,18 +60,25 @@ scene.add(cube3)
 // 参数3：光照距离
 // 参数4：光源衰减，为0时不衰减
 const pointLight = new THREE.PointLight(0xffffff, 10, 0, 0)
-pointLight.position.set(20, 20, 20)
+
+
 scene.add(pointLight)
+
+
+
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer()
-// 设置渲染的尺寸大小
-renderer.setSize(window.innerWidth, window.innerHeight - 60)
-// console.log(renderer);
 
 onMounted(() => {
   // 将webgl渲染的canvas内容添加到body
   const threeContainer = document.getElementById('threejs')
-  threeContainer!.appendChild(renderer.domElement)
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      // 设置渲染的尺寸大小
+      renderer.setSize(window.innerWidth, window.innerHeight - 60)
+      threeContainer!.appendChild(renderer.domElement)
+    })
+  })
 })
 // 使用渲染器，通过相机将场景渲染进来
 // renderer.render(scene, camera)
@@ -99,10 +86,6 @@ const controls = new OrbitControls(camera, renderer.domElement)
 controls.addEventListener('change', () => {
   renderer.render(scene, camera)
 })
-// controls.addEventListener('change', function () {
-//   // 浏览器控制台查看相机位置变化
-//   console.log('camera.position', camera.position)
-// })
 </script>
 <style scoped lang="scss">
 .container {
