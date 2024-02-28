@@ -1,14 +1,23 @@
 <template>
   <div class="container">
     <div class="menuContainer">
-      <el-menu class="el-menu-demo" mode="horizontal" @select="handleSelect">
-        <el-menu-item
-          v-for="(item, index) in routeList"
-          :key="index"
-          v-show="item.path !== '/'"
-          >{{ item.name }}</el-menu-item
+      <el-scrollbar>
+        <el-menu
+          class="el-menu-demo"
+          :router="true"
+          :default-active="$route.path"
+          active-text-color="#12100d"
+          background-color="#f3f3f3"
+          text-color="#000000"
+          mode="horizontal"
         >
-      </el-menu>
+          <template v-for="(item, index) in routeList" :key="item.path">
+            <el-menu-item v-if="!item.meta.hidden" :index="item.path">{{
+              item.name
+            }}</el-menu-item>
+          </template>
+        </el-menu>
+      </el-scrollbar>
     </div>
     <div class="routerViewContainer">
       <RouterView />
@@ -18,9 +27,10 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { routeList } from './router/routes'
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
+const $route = useRoute()
 </script>
 <style scoped lang="scss">
 .container {
