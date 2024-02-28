@@ -6,7 +6,7 @@
 import { text } from 'stream/consumers'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { onMounted, ref, nextTick } from 'vue'
+import { onMounted, ref, nextTick, onUnmounted } from 'vue'
 
 // console.log(THREE);
 
@@ -104,7 +104,10 @@ const dirLightHelper = new THREE.DirectionalLightHelper(
 scene.add(dirLightHelper)
 
 // 初始化渲染器
-const renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer({
+  antialias: true, // 是否执行抗锯齿。默认为false
+  logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
+})
 const render = () => {
   renderer.render(scene, camera)
 }
@@ -118,6 +121,22 @@ onMounted(() => {
     render()
   })
 })
+// 退出页面释放资源
+const relaseResource = () => {
+  // 渲染器销毁
+  renderer.dispose()
+  // Material销毁
+  cubeMaterial.dispose()
+  cubeMaterial2.dispose()
+  cubeMaterial3.dispose()
+  // Geometry销毁
+  cubeGeometry.dispose()
+  cubeGeometry2.dispose()
+  cubeGeometry3.dispose()
+}
+onUnmounted(() => {
+  relaseResource()
+})
 // 使用渲染器，通过相机将场景渲染进来
 // renderer.render(scene, camera)
 const controls = new OrbitControls(camera, renderer.domElement)
@@ -130,9 +149,7 @@ window.addEventListener('resize', () => {
   // 更新投影矩阵
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight - 60)
-
 })
-
 </script>
 <style scoped lang="scss">
 .container {

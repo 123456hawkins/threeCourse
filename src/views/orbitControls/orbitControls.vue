@@ -65,7 +65,10 @@ pointLight.position.set(80, 80, 80)
 scene.add(pointLight)
 
 // 初始化渲染器
-const renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer({
+  antialias: true, // 是否执行抗锯齿。默认为false
+  logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
+})
 const render = () => {
   renderer.render(scene, camera)
 }
@@ -78,6 +81,22 @@ onMounted(() => {
     threeContainer!.appendChild(renderer.domElement)
     render()
   })
+})
+// 退出页面释放资源
+const relaseResource = () => {
+  // 渲染器销毁
+  renderer.dispose()
+  // Material销毁
+  cubeMaterial.dispose()
+  cubeMaterial2.dispose()
+  cubeMaterial3.dispose()
+  // Geometry销毁
+  cubeGeometry.dispose()
+  cubeGeometry2.dispose()
+  cubeGeometry3.dispose()
+}
+onUnmounted(() => {
+  relaseResource()
 })
 // 使用渲染器，通过相机将场景渲染进来
 // renderer.render(scene, camera)
