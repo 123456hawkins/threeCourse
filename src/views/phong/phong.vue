@@ -11,6 +11,9 @@ const stats0 = new Stats()
 const stats1 = new Stats()
 const stats2 = new Stats()
 
+// 摄像机角度
+let angle = 0
+
 // 设置定时器id
 let animationId
 stats0.showPanel(0)
@@ -40,54 +43,42 @@ scene.add(axesHelper)
 
 // 添加物体
 // 创建几何体
-
-//BoxGeometry：长方体
-const geometry1 = new THREE.BoxGeometry(1, 1, 1)
-// SphereGeometry：球体
-const geometry2 = new THREE.SphereGeometry(1)
-// CylinderGeometry：圆柱
-const geometry3 = new THREE.CylinderGeometry(1, 1, 1)
-// PlaneGeometry：矩形平面
-const geometry4 = new THREE.PlaneGeometry(1, 1)
-// CircleGeometry：圆形平面
-const geometry5 = new THREE.CircleGeometry(1)
+const cubeGeometry = new THREE.TetrahedronGeometry(1, 5)
+const cubeGeometry2 = new THREE.CapsuleGeometry(1, 1, 4, 8)
+const cubeGeometry3 = new THREE.SphereGeometry(1, 32, 16)
 
 // 漫反射材质
-const cubeMaterial1 = new THREE.MeshLambertMaterial({ color: 0xff3300 })
-const cubeMaterial2 = new THREE.MeshLambertMaterial({ color: 0xffff00 })
-const cubeMaterial3 = new THREE.MeshLambertMaterial({ color: 0x11ff00 })
-const cubeMaterial4 = new THREE.MeshLambertMaterial({ color: 0x0b159b })
-const cubeMaterial5 = new THREE.MeshLambertMaterial({ color: 0xeb581e })
+const cubeMaterial = new THREE.MeshStandardMaterial({
+  color: 0xff3300,
+  metalness: 1,
+  roughness: 0.3,
+})
+// 高光材质
+const cubeMaterial2 = new THREE.MeshStandardMaterial({
+  color: 0x0b56eb,
+  metalness: 1, // 控制金属感
+  roughness: 0.4, // 控制光滑度
+})
+const cubeMaterial3 = new THREE.MeshStandardMaterial({
+  color: 0x11ff00,
+  metalness: 1,
+  roughness: 0.2,
+})
 
 // 根据几何体和材质创建物体
-const cube1 = new THREE.Mesh(geometry1, cubeMaterial1)
-const cube2 = new THREE.Mesh(geometry2, cubeMaterial2)
-const cube3 = new THREE.Mesh(geometry3, cubeMaterial3)
-const cube4 = new THREE.Mesh(geometry4, cubeMaterial4)
-const cube5 = new THREE.Mesh(geometry5, cubeMaterial5)
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+const cube2 = new THREE.Mesh(cubeGeometry2, cubeMaterial2)
+const cube3 = new THREE.Mesh(cubeGeometry3, cubeMaterial3)
 
 // 设置几何体位置
-cube1.position.set(0, 0, 0)
-cube2.position.set(5, 0, 0)
-cube3.position.set(0, 5, 0)
-cube4.position.set(0, 0, 5)
-cube5.position.set(5, 5, 5)
+cube.position.set(3, 0, 0)
+cube2.position.set(0, 3, 0)
+cube3.position.set(0, 0, 3)
 
 // 将几何体添加到场景中
-scene.add(cube1)
+scene.add(cube)
 scene.add(cube2)
 scene.add(cube3)
-scene.add(cube4)
-scene.add(cube5)
-// 设置点光源
-// 参数1：0xffffff是纯白光,表示光源颜色
-// 参数2：1.0,表示光照强度，可以根据需要调整
-// 参数3：光照距离
-// 参数4：光源衰减，为0时不衰减
-const pointLight = new THREE.PointLight(0xffffff, 10, 0, 0)
-pointLight.position.set(80, 80, 80)
-
-scene.add(pointLight)
 
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer({
@@ -95,6 +86,19 @@ const renderer = new THREE.WebGLRenderer({
   logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
 })
 
+const pointLight = new THREE.PointLight(0xffffff, 10, 0, 0)
+pointLight.position.set(30, 0, 30)
+scene.add(pointLight)
+
+const changPointLightPosition = () => {
+  // 更新 pointLight 位置
+  const radius = 30 // 旋转半径
+  const speed = 0.01 // 旋转速度
+  angle += speed
+  const x = Math.cos(angle) * radius
+  const z = Math.sin(angle) * radius
+  pointLight.position.set(x, 0, z)
+}
 // 渲染函数
 // 循环渲染事件
 // const clock = new THREE.Clock()
@@ -105,12 +109,12 @@ const render = () => {
   stats0.update()
   stats1.update()
   stats2.update()
-  renderer.render(scene, camera)
-  cube1.rotateY(0.01)
+  
+  cube.rotateY(0.01)
   cube2.rotateX(0.02)
   cube3.rotateZ(0.03)
-  cube4.rotateX(0.03)
-  cube5.rotateY(0.03)
+  changPointLightPosition()
+  renderer.render(scene, camera)
   animationId = requestAnimationFrame(render)
 }
 const addStatsDom = () => {
@@ -155,17 +159,13 @@ const relaseResource = () => {
   // 渲染器销毁
   renderer.dispose()
   // Material销毁
-  cubeMaterial1.dispose()
+  cubeMaterial.dispose()
   cubeMaterial2.dispose()
   cubeMaterial3.dispose()
-  cubeMaterial4.dispose()
-  cubeMaterial5.dispose()
   // Geometry销毁
-  geometry1.dispose()
-  geometry2.dispose()
-  geometry3.dispose()
-  geometry4.dispose()
-  geometry5.dispose()
+  cubeGeometry.dispose()
+  cubeGeometry2.dispose()
+  cubeGeometry3.dispose()
 }
 onUnmounted(() => {
   relaseResource()

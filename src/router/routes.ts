@@ -54,5 +54,14 @@ export const routeList = [
       hidden: false
     }
   },
+  {
+    path: '/phong',
+    name: 'phong',
+    component: () => import('../views/phong/phong.vue'),
+    meta: {
+      name: "phong",
+      hidden: false
+    }
+  },
 
 ]
