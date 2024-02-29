@@ -63,5 +63,14 @@ export const routeList = [
       hidden: false
     }
   },
+  {
+    path: '/gui',
+    name: 'gui',
+    component: () => import('../views/gui/gui.vue'),
+    meta: {
+      name: "gui",
+      hidden: false
+    }
+  },
 
 ]
