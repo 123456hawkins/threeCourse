@@ -1,6 +1,4 @@
-<template>
-  <div id="threejs" class="container"></div>
-</template>
+<template></template>
 
 <script setup lang="ts">
 import { text } from 'stream/consumers'
@@ -11,6 +9,8 @@ import { onMounted, ref, nextTick, onUnmounted } from 'vue'
 // console.log(THREE);
 
 // 目标：了解three.js最基本的内容
+// 容器
+let threeContainer: any
 
 // 1、创建场景
 const scene = new THREE.Scene()
@@ -110,10 +110,14 @@ const renderer = new THREE.WebGLRenderer({
 const render = () => {
   renderer.render(scene, camera)
 }
+const domInit = () => {
+  threeContainer = document.createElement('div')
+  document.body.appendChild(threeContainer)
+}
 onMounted(() => {
-  // 将webgl渲染的canvas内容添加到body
-  const threeContainer = document.getElementById('threejs')
   nextTick(() => {
+    // 将webgl渲染的canvas内容添加到body
+    domInit()
     // 设置渲染的尺寸大小
     renderer.setSize(window.innerWidth, window.innerHeight - 60)
     threeContainer!.appendChild(renderer.domElement)
@@ -132,6 +136,7 @@ const relaseResource = () => {
   cubeGeometry.dispose()
   cubeGeometry2.dispose()
   cubeGeometry3.dispose()
+  document.body.removeChild(threeContainer)
 }
 onUnmounted(() => {
   relaseResource()

@@ -1,23 +1,17 @@
-import type { disposeEmitNodes } from 'typescript'; import type { ThreeMFLoader
-} from 'three/examples/jsm/Addons.js'; import type { ThreeMFLoader } from
-'three/examples/jsm/Addons.js'; import type { ThreeMFLoader } from
-'three/examples/jsm/Addons.js';
-<template>
-  <div id="threejs" class="container"></div>
-</template>
+<template></template>
 
 <script setup lang="ts">
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js'
 //引入性能监视器stats.js
 import Stats from 'three/addons/libs/stats.module.js'
 const stats0 = new Stats()
-const stats1 = new Stats()
-const stats2 = new Stats()
 
+// 容器
+let threeContainer: any
 stats0.showPanel(0)
-stats1.showPanel(1)
-stats2.showPanel(2)
+
 import { onMounted, ref, nextTick, onUnmounted } from 'vue'
 
 // 1、创建场景
@@ -62,22 +56,22 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true, // 是否执行抗锯齿。默认为false
   logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
 })
+// const renderer = new WebGPURenderer({ antialias: true })
 
 // 渲染函数
 // 循环渲染事件
 const render = () => {
   stats0.update()
-  stats1.update()
-  stats2.update()
+
   renderer.render(scene, camera)
 }
-const addCube = (i, j, k) => {
+const addCube = (i: number, j: number, k: number) => {
   const mesh = new THREE.Mesh(geometry, material)
   mesh.position.set(i * 2, j * 2, k * 2)
   scene.add(mesh)
 }
 
-const addCubesWithDelay = (maxI, maxJ, maxK) => {
+const addCubesWithDelay = (maxI: number, maxJ: number, maxK: number) => {
   let i = 0,
     j = 0,
     k = 0
@@ -110,33 +104,25 @@ const addStatsDom = () => {
   stats0.dom.style.left = '0px'
   stats0.dom.style.top = '60px'
 
-  stats1.dom.style.position = 'fixed'
-  stats1.dom.style.left = '80px' // Adjust this value as needed
-  stats1.dom.style.top = '60px'
-
-  stats2.dom.style.position = 'fixed'
-  stats2.dom.style.left = '160px' // Adjust this value as needed
-  stats2.dom.style.top = '60px'
-
   document.body.appendChild(stats0.dom)
-  document.body.appendChild(stats1.dom)
-  document.body.appendChild(stats2.dom)
 }
 const removeStatsDom = () => {
   document.body.removeChild(stats0.dom)
-  document.body.removeChild(stats1.dom)
-  document.body.removeChild(stats2.dom)
+}
+const domInit = () => {
+  threeContainer = document.createElement('div')
+  document.body.appendChild(threeContainer)
 }
 onMounted(() => {
-  // 将webgl渲染的canvas内容添加到body
-  const threeContainer = document.getElementById('threejs')
   nextTick(() => {
+    // 将webgl渲染的canvas内容添加到body
+    domInit()
     // 设置渲染的尺寸大小
     renderer.setSize(window.innerWidth, window.innerHeight - 60)
     threeContainer!.appendChild(renderer.domElement)
     addStatsDom()
     // render()
-    addCubesWithDelay(10, 10, 10)
+    addCubesWithDelay(15, 15, 15)
   })
 })
 // 退出页面释放资源
@@ -146,6 +132,7 @@ const relaseResource = () => {
   renderer.dispose()
   material.dispose()
   geometry.dispose()
+  document.body.removeChild(threeContainer)
 }
 onUnmounted(() => {
   relaseResource()

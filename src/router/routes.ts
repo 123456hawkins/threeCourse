@@ -1,76 +1,87 @@
 export const routeList = [
   {
     path: '/',
-    name: 'home',
-    redirect: '/orbitControls',
+    name: '/',
+    component: () => import('@/layout/index.vue'),
     meta: {
-      name: "home",
+      title: "/",
       hidden: true
-    }
+    },
+    redirect: '/easyLearn'
   },
   {
-    path: '/orbitControls',
-    name: 'orbitControls',
-    component: () => import('../views/orbitControls/orbitControls.vue'),
+    path: '/easyLearn',
+    name: 'easyLearn',
+    component: () => import('@/layout/index.vue'),
     meta: {
-      name: "orbitControls",
+      title: "easyLearn",
       hidden: false
-    }
+    },
+    redirect: '/easyLearn/orbitControls',
+    children: [{
+      path: '/easyLearn/orbitControls',
+      name: 'orbitControls',
+      component: () => import('../views/orbitControls/orbitControls.vue'),
+      meta: {
+        title: "orbitControls",
+        hidden: false
+      }
+    },
+    {
+      path: '/easyLearn/lightTest',
+      name: 'lightTest',
+      component: () => import('../views/lightTest/lightTest.vue'),
+      meta: {
+        title: "lightTest",
+        hidden: false
+      }
+    },
+    {
+      path: '/easyLearn/animation',
+      name: 'animation',
+      component: () => import('../views/animation/animation.vue'),
+      meta: {
+        title: "animation",
+        hidden: false
+      }
+    },
+    {
+      path: '/easyLearn/arrayCube',
+      name: 'arrayCube',
+      component: () => import('../views/arrayCube/arrayCube.vue'),
+      meta: {
+        title: "arrayCube",
+        hidden: false
+      }
+    },
+    {
+      path: '/easyLearn/commonGeo',
+      name: 'commonGeo',
+      component: () => import('../views/commonGeo/commonGeo.vue'),
+      meta: {
+        title: "commonGeo",
+        hidden: false
+      }
+    },
+    {
+      path: '/easyLearn/phong',
+      name: 'phong',
+      component: () => import('../views/phong/phong.vue'),
+      meta: {
+        title: "phong",
+        hidden: false
+      }
+    },
+    {
+      path: '/easyLearn/gui',
+      name: 'gui',
+      component: () => import('../views/gui/gui.vue'),
+      meta: {
+        title: "gui",
+        hidden: false
+      }
+    }]
   },
 
-  {
-    path: '/lightTest',
-    name: 'lightTest',
-    component: () => import('../views/lightTest/lightTest.vue'),
-    meta: {
-      name: "lightTest",
-      hidden: false
-    }
-  },
-  {
-    path: '/animation',
-    name: 'animation',
-    component: () => import('../views/animation/animation.vue'),
-    meta: {
-      name: "animation",
-      hidden: false
-    }
-  },
-  {
-    path: '/arrayCube',
-    name: 'arrayCube',
-    component: () => import('../views/arrayCube/arrayCube.vue'),
-    meta: {
-      name: "arrayCube",
-      hidden: false
-    }
-  },
-  {
-    path: '/commonGeo',
-    name: 'commonGeo',
-    component: () => import('../views/commonGeo/commonGeo.vue'),
-    meta: {
-      name: "commonGeo",
-      hidden: false
-    }
-  },
-  {
-    path: '/phong',
-    name: 'phong',
-    component: () => import('../views/phong/phong.vue'),
-    meta: {
-      name: "phong",
-      hidden: false
-    }
-  },
-  {
-    path: '/gui',
-    name: 'gui',
-    component: () => import('../views/gui/gui.vue'),
-    meta: {
-      name: "gui",
-      hidden: false
-    }
-  },
 
 ]

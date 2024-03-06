@@ -1,6 +1,4 @@
-<template>
-  <div id="threejs" class="container"></div>
-</template>
+<template></template>
 
 <script setup lang="ts">
 import * as THREE from 'three'
@@ -8,17 +6,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 //引入性能监视器stats.js
 import Stats from 'three/addons/libs/stats.module.js'
 const stats0 = new Stats()
-const stats1 = new Stats()
-const stats2 = new Stats()
 
 // 摄像机角度
 let angle = 0
-
+// 容器
+let threeContainer: any
 // 设置定时器id
-let animationId
+let animationId: any
 stats0.showPanel(0)
-stats1.showPanel(1)
-stats2.showPanel(2)
 import { onMounted, ref, nextTick, onUnmounted } from 'vue'
 
 // 1、创建场景
@@ -107,9 +102,7 @@ const render = () => {
   // console.log('两帧渲染间隔:' + spt + 'ms')
   // console.log('FPS:', 1000 / spt)
   stats0.update()
-  stats1.update()
-  stats2.update()
-  
+
   cube.rotateY(0.01)
   cube2.rotateX(0.02)
   cube3.rotateZ(0.03)
@@ -123,27 +116,18 @@ const addStatsDom = () => {
   stats0.dom.style.left = '0px'
   stats0.dom.style.top = '60px'
 
-  stats1.dom.style.position = 'fixed'
-  stats1.dom.style.left = '80px' // Adjust this value as needed
-  stats1.dom.style.top = '60px'
-
-  stats2.dom.style.position = 'fixed'
-  stats2.dom.style.left = '160px' // Adjust this value as needed
-  stats2.dom.style.top = '60px'
-
   document.body.appendChild(stats0.dom)
-  document.body.appendChild(stats1.dom)
-  document.body.appendChild(stats2.dom)
 }
 const removeStatsDom = () => {
   document.body.removeChild(stats0.dom)
-  document.body.removeChild(stats1.dom)
-  document.body.removeChild(stats2.dom)
+}
+const domInit = () => {
+  threeContainer = document.createElement('div')
+  document.body.appendChild(threeContainer)
 }
 onMounted(() => {
-  // 将webgl渲染的canvas内容添加到body
-  const threeContainer = document.getElementById('threejs')
   nextTick(() => {
+    domInit()
     // 设置渲染的尺寸大小
     renderer.setSize(window.innerWidth, window.innerHeight - 60)
     threeContainer!.appendChild(renderer.domElement)
@@ -166,6 +150,7 @@ const relaseResource = () => {
   cubeGeometry.dispose()
   cubeGeometry2.dispose()
   cubeGeometry3.dispose()
+  document.body.removeChild(threeContainer)
 }
 onUnmounted(() => {
   relaseResource()
