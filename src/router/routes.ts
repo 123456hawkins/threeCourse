@@ -80,8 +80,16 @@ export const routeList = [
         title: "gui",
         hidden: false
       }
+    },
+    {
+      path: '/easyLearn/importModel',
+      name: 'importModel',
+      component: () => import('@/views/gltf/importModel/index.vue'),
+      meta: {
+        title: "importModel",
+        hidden: false
+      },
     }]
   },
-
 
 ]

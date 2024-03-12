@@ -29,10 +29,14 @@
 import Menu from './menu/index.vue'
 import { RouterView } from 'vue-router'
 import { routeList } from '@/router/routes'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 const $route = useRoute()
+onMounted(() => {
+  console.log('routeList',routeList);
+
+})
 </script>
 <style scoped lang="scss">
 .container {
