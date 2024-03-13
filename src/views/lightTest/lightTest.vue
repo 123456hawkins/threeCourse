@@ -1,10 +1,9 @@
 <template></template>
 
 <script setup lang="ts">
-import { text } from 'stream/consumers'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { onMounted, ref, nextTick, onUnmounted } from 'vue'
+import { onMounted, nextTick, onUnmounted } from 'vue'
 
 // console.log(THREE);
 

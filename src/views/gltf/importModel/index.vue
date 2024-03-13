@@ -20,11 +20,9 @@ let camera: any,
   renderer: any,
   axesHelper: any,
   mesh: any,
-  directionalLight: any,
+  ambientLight,
   controls: any
 
-let line: any
-let currentIndex = 0
 // 容器
 let threeContainer: any
 // 设置定时器id
@@ -33,6 +31,7 @@ let animationId: any
 let selectedObject: any = null
 let INTERSECTED: any
 let meshes: any = []
+let cube: any
 import { onMounted, ref, nextTick, onUnmounted } from 'vue'
 import orbitControls from '@/views/orbitControls/orbitControls.vue'
 
@@ -48,42 +47,17 @@ const removeStatsDom = () => {
   document.body.removeChild(stats0.dom)
 }
 const onWindowResize = () => {
-  camera.aspect = window.innerWidth / (window.innerHeight - 60)
+  camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
-  renderer.setSize(window.innerWidth, window.innerHeight - 60)
+  renderer.setSize(window.innerWidth, window.innerHeight)
   renderer.render(scene, camera)
 }
 const onPointerMove = (event: any) => {
   pointer.x = (event.clientX / window.innerWidth) * 2 - 1
   pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
-  // console.log(pointer.x, pointer.y)
 }
-const init = () => {
-  // 获取页面dom元素
-  threeContainer = document.createElement('div')
-  document.body.appendChild(threeContainer)
 
-  // 1、创建场景
-  scene = new THREE.Scene()
-  camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / (window.innerHeight - 60),
-    0.1,
-    1000
-  )
-  // AxesHelper：辅助观察的坐标系
-  const axesHelper = new THREE.AxesHelper(150)
-  scene.add(axesHelper)
-
-  // 导入平行光
-  directionalLight = new THREE.DirectionalLight(0xffffff, 9)
-  scene.add(directionalLight)
-
-  // 设置相机位置
-  camera.position.set(10, 10, 10)
-  camera.lookAt(0, 0, 0)
-  scene.add(camera)
-
+const importModel = () => {
   // 导入模型
   // 注意导入的模型一定要放在public文件夹下
   loader.load(
@@ -101,7 +75,60 @@ const init = () => {
       console.error(error)
     }
   )
-  console.log('scene', scene.children)
+}
+const importOriginModel = () => {
+  const geometry = new THREE.BoxGeometry()
+  for (let i = 0; i < 2000; i++) {
+    const object = new THREE.Mesh(
+      geometry,
+      new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff })
+    )
+
+    object.position.x = Math.random() * 40 - 20
+    object.position.y = Math.random() * 40 - 20
+    object.position.z = Math.random() * 40 - 20
+
+    object.rotation.x = Math.random() * 2 * Math.PI
+    object.rotation.y = Math.random() * 2 * Math.PI
+    object.rotation.z = Math.random() * 2 * Math.PI
+
+    object.scale.x = Math.random() + 0.5
+    object.scale.y = Math.random() + 0.5
+    object.scale.z = Math.random() + 0.5
+
+    scene.add(object)
+  }
+}
+const init = () => {
+  // 获取页面dom元素
+  threeContainer = document.createElement('div')
+  document.body.appendChild(threeContainer)
+
+  // 1、创建场景
+  scene = new THREE.Scene()
+  scene.background = new THREE.Color(0xf2f2f1)
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  )
+  // AxesHelper：辅助观察的坐标系
+  const axesHelper = new THREE.AxesHelper(150)
+  scene.add(axesHelper)
+
+  // 导入平行光
+  ambientLight = new THREE.AmbientLight(0xffffff, 1)
+  scene.add(ambientLight)
+
+  // 设置相机位置
+  camera.position.set(10, 10, 10)
+  camera.lookAt(0, 0, 0)
+  scene.add(camera)
+
+  // importModel()
+  importOriginModel()
+  // console.log('scene', scene.children)
 
   raycaster = new THREE.Raycaster()
   // 初始化渲染器
@@ -110,7 +137,7 @@ const init = () => {
     logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
   })
   // 设置渲染的尺寸大小
-  renderer.setSize(window.innerWidth, window.innerHeight - 60)
+  renderer.setSize(window.innerWidth, window.innerHeight)
   threeContainer!.appendChild(renderer.domElement)
 
   // 使用渲染器，通过相机将场景渲染进来
@@ -121,17 +148,62 @@ const init = () => {
 
   addStatsDom()
 
-  document.addEventListener('mousemove', onPointerMove)
+  document.addEventListener('click', onPointerMove)
   window.addEventListener('resize', onWindowResize)
 }
 onMounted(() => {
   nextTick(() => {
     init()
-    // console.log('children', scene.children)
     animate()
   })
 })
 
+const collectMeshes = (object: any, array: any) => {
+  if (object instanceof THREE.Mesh) {
+    array.push(object)
+  } else if (object instanceof THREE.Group) {
+    object.children.forEach((child) => collectMeshes(child, array))
+  }
+}
+// 渲染函数
+// 循环渲染事件
+const animate = () => {
+  animationId = requestAnimationFrame(animate)
+  stats0.update()
+  render()
+}
+const render = () => {
+  raycaster.setFromCamera(pointer, camera)
+
+  const intersects = raycaster.intersectObjects(scene.children, false)
+
+  if (pointer.x !== 0 && pointer.y !== 0) {
+    if (intersects.length > 0) {
+      if (INTERSECTED !== intersects[0].object) {
+        // 取消上一个高亮物体的发光效果
+        if (INTERSECTED && INTERSECTED.material.emissive) {
+          INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
+        }
+        // 设置当前高亮物体
+        INTERSECTED = intersects[0].object
+        if (INTERSECTED.material.emissive) {
+          // 存储当前发光颜色
+          INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex()
+          // 设置新的发光颜色
+          INTERSECTED.material.emissive.setHex(0xff0000)
+        }
+      }
+    } else {
+      // 取消上一个高亮物体的发光效果
+      if (INTERSECTED && INTERSECTED.material.emissive) {
+        INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
+      }
+      INTERSECTED = null
+    }
+  }
+
+  renderer.render(scene, camera)
+}
 // 退出页面释放资源
 const relaseResource = () => {
   // requsetAnimationFrame销毁
@@ -144,40 +216,6 @@ const relaseResource = () => {
 onUnmounted(() => {
   relaseResource()
 })
-const collectMeshes = (object: any, array: any) => {
-  if (object instanceof THREE.Mesh) {
-    array.push(object)
-  } else if (object instanceof THREE.Group) {
-    object.children.forEach((child) => collectMeshes(child, array))
-  }
-}
-// 渲染函数
-// 循环渲染事件
-const animate = () => {
-  animationId = requestAnimationFrame(animate)
-  render()
-  stats0.update()
-}
-const render = () => {
-  raycaster.setFromCamera(pointer, camera)
-  const intersects = raycaster.intersectObjects(meshes)
-  if (intersects.length > 0) {
-    if (INTERSECTED != intersects[0].object) {
-      if (INTERSECTED !== null) {
-        INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
-      }
-      INTERSECTED = intersects[0].object
-      INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex()
-      INTERSECTED.material.emissive.setHex(0xff0000)
-    }
-  } else {
-    if (INTERSECTED)
-      INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
-    INTERSECTED = null
-  }
-
-  renderer.render(scene, camera)
-}
 </script>
 <style scoped lang="scss">
 .container {

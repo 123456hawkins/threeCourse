@@ -81,15 +81,24 @@ export const routeList = [
         hidden: false
       }
     },
-    {
-      path: '/easyLearn/importModel',
-      name: 'importModel',
-      component: () => import('@/views/gltf/importModel/index.vue'),
-      meta: {
-        title: "importModel",
-        hidden: false
-      },
-    }]
+    ]
   },
-
+  {
+    path: '/easyLearn/importModel',
+    name: 'importModel',
+    component: () => import('@/views/gltf/importModel/index.vue'),
+    meta: {
+      title: "importModel",
+      hidden: false
+    },
+  },
+  {
+    path: '/outline',
+    name: 'outline',
+    component: () => import('@/views/outline/index.vue'),
+    meta: {
+      title: "outline",
+      hidden: false
+    },
+  },
 ]
