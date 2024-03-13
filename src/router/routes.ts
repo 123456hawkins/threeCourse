@@ -101,4 +101,13 @@ export const routeList = [
       hidden: false
     },
   },
+  {
+    path: '/3dtag',
+    name: '3dtag',
+    component: () => import('@/views/3dtag/index.vue'),
+    meta: {
+      title: "3dtag",
+      hidden: false
+    },
+  },
 ]
