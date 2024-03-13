@@ -5,113 +5,133 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 // 导入模型
 // 引入gltf模型加载库GLTFLoader.js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-const loader = new GLTFLoader()
-
-// 创建射线投射器
-const raycaster = new THREE.Raycaster()
-const mouse = new THREE.Vector2()
 
 //引入性能监视器stats.js
 import Stats from 'three/addons/libs/stats.module.js'
-const stats0 = new Stats()
+let stats0: any
 
-// 摄像机角度
-let angle = 0
+const loader = new GLTFLoader()
+
+// 创建射线投射器
+let raycaster: any
+let pointer = { x: 0, y: 0 }
+let camera: any,
+  scene: any,
+  renderer: any,
+  axesHelper: any,
+  mesh: any,
+  directionalLight: any,
+  controls: any
+
+let line: any
+let currentIndex = 0
 // 容器
 let threeContainer: any
 // 设置定时器id
 let animationId: any
 //选中的物体
 let selectedObject: any = null
-stats0.showPanel(0)
+let INTERSECTED: any
+let meshes: any = []
 import { onMounted, ref, nextTick, onUnmounted } from 'vue'
 import orbitControls from '@/views/orbitControls/orbitControls.vue'
 
-// 1、创建场景
-const scene = new THREE.Scene()
-
-// 2、创建相机
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / (window.innerHeight - 60),
-  0.1,
-  1000
-)
-// 导入模型
-// 注意导入的模型一定要放在public文件夹下
-loader.load(
-  '/model/Car.glb',
-  function (gltf) {
-    console.log('模型层级结构：', gltf.scene)
-    scene.add(gltf.scene)
-    const obj = gltf.scene.getObjectByName('NormalCar1_BackWheels_Cube011')
-    obj.children.forEach(function (mesh) {
-      mesh.material.color.set(0xffff00)
-    })
-  },
-  undefined,
-  function (error) {
-    console.error(error)
-  }
-)
-// 设置相机位置
-camera.position.set(10, 10, 10)
-camera.lookAt(0, 0, 0)
-scene.add(camera)
-
-// AxesHelper：辅助观察的坐标系
-const axesHelper = new THREE.AxesHelper(150)
-scene.add(axesHelper)
-
-// 初始化渲染器
-const renderer = new THREE.WebGLRenderer({
-  antialias: true, // 是否执行抗锯齿。默认为false
-  logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
-})
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 9)
-scene.add(directionalLight)
-
 const addStatsDom = () => {
+  stats0 = new Stats()
   // 设置 Stats 的位置
   stats0.dom.style.position = 'fixed'
   stats0.dom.style.left = '0px'
   stats0.dom.style.top = '60px'
-
   document.body.appendChild(stats0.dom)
 }
 const removeStatsDom = () => {
   document.body.removeChild(stats0.dom)
 }
-const domInit = () => {
+const onWindowResize = () => {
+  camera.aspect = window.innerWidth / (window.innerHeight - 60)
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight - 60)
+  renderer.render(scene, camera)
+}
+const onPointerMove = (event: any) => {
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+  // console.log(pointer.x, pointer.y)
+}
+const init = () => {
+  // 获取页面dom元素
   threeContainer = document.createElement('div')
   document.body.appendChild(threeContainer)
+
+  // 1、创建场景
+  scene = new THREE.Scene()
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / (window.innerHeight - 60),
+    0.1,
+    1000
+  )
+  // AxesHelper：辅助观察的坐标系
+  const axesHelper = new THREE.AxesHelper(150)
+  scene.add(axesHelper)
+
+  // 导入平行光
+  directionalLight = new THREE.DirectionalLight(0xffffff, 9)
+  scene.add(directionalLight)
+
+  // 设置相机位置
+  camera.position.set(10, 10, 10)
+  camera.lookAt(0, 0, 0)
+  scene.add(camera)
+
+  // 导入模型
+  // 注意导入的模型一定要放在public文件夹下
+  loader.load(
+    '/model/SUV.glb',
+    function (gltf) {
+      console.log('模型层级结构：', gltf.scene)
+      mesh = gltf.scene
+      collectMeshes(gltf.scene, meshes)
+      console.log('meshes', meshes)
+
+      scene.add(mesh)
+    },
+    undefined,
+    function (error) {
+      console.error(error)
+    }
+  )
+  console.log('scene', scene.children)
+
+  raycaster = new THREE.Raycaster()
+  // 初始化渲染器
+  renderer = new THREE.WebGLRenderer({
+    antialias: true, // 是否执行抗锯齿。默认为false
+    logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
+  })
+  // 设置渲染的尺寸大小
+  renderer.setSize(window.innerWidth, window.innerHeight - 60)
+  threeContainer!.appendChild(renderer.domElement)
+
+  // 使用渲染器，通过相机将场景渲染进来
+  controls = new OrbitControls(camera, renderer.domElement)
+  controls.addEventListener('change', () => {
+    renderer.render(scene, camera)
+  })
+
+  addStatsDom()
+
+  document.addEventListener('mousemove', onPointerMove)
+  window.addEventListener('resize', onWindowResize)
 }
 onMounted(() => {
   nextTick(() => {
-    domInit()
-    window.addEventListener('mousemove', (event) => {
-      // 计算鼠标位置
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-      mouse.y = -(event.clientY / (window.innerHeight - 60)) * 2 + 1
-      // console.log(mouse.x, mouse.y)
-    })
-    window.addEventListener('resize', () => {
-      // 修改相机配置
-      camera.aspect = window.innerWidth / (window.innerHeight - 60)
-      // 更新投影矩阵
-      camera.updateProjectionMatrix()
-      renderer.setSize(window.innerWidth, window.innerHeight - 60)
-    })
-    console.log('children', scene.children)
-
-    // 设置渲染的尺寸大小
-    renderer.setSize(window.innerWidth, window.innerHeight - 60)
-    threeContainer!.appendChild(renderer.domElement)
-    addStatsDom()
-    render()
+    init()
+    // console.log('children', scene.children)
+    animate()
   })
 })
+
 // 退出页面释放资源
 const relaseResource = () => {
   // requsetAnimationFrame销毁
@@ -119,58 +139,45 @@ const relaseResource = () => {
   removeStatsDom()
   // 渲染器销毁
   renderer.dispose()
-
   document.body.removeChild(threeContainer)
 }
 onUnmounted(() => {
   relaseResource()
 })
-
-// 使用渲染器，通过相机将场景渲染进来
-// 使用了循环渲染事件，就不用再通过事件change执行了
-// renderer.render(scene, camera)
-const controls = new OrbitControls(camera, renderer.domElement)
-
-const selectObjHightLight = () => {
-  raycaster.setFromCamera(mouse, camera)
-  const intersects = raycaster.intersectObjects(scene.children, true)
-  if (intersects !== undefined) {
-    if (intersects.length > 0) {
-      const newSelectedObject = intersects[0].object
-
-      if (newSelectedObject !== selectedObject) {
-        // 取消之前模块的高亮
-        if (selectedObject) {
-          selectedObject.material.color.set(0x000000)
-        }
-
-        // 设置当前模块高亮
-        selectedObject = newSelectedObject
-        selectedObject.material.color.set(0xff0000)
-      }
-    } else {
-      // 鼠标未与任何模块相交时取消高亮
-      if (selectedObject) {
-        selectedObject.material.color.set(0x000000)
-        selectedObject = null
-      }
-    }
+const collectMeshes = (object: any, array: any) => {
+  if (object instanceof THREE.Mesh) {
+    array.push(object)
+  } else if (object instanceof THREE.Group) {
+    object.children.forEach((child) => collectMeshes(child, array))
   }
 }
 // 渲染函数
 // 循环渲染事件
-const render = () => {
-  // const spt = clock.getDelta() * 1000
-  // console.log('两帧渲染间隔:' + spt + 'ms')
-  // console.log('FPS:', 1000 / spt)
-  selectObjHightLight()
+const animate = () => {
+  animationId = requestAnimationFrame(animate)
+  render()
   stats0.update()
-  renderer.render(scene, camera)
-  animationId = requestAnimationFrame(render)
 }
-controls.addEventListener('change', () => {
+const render = () => {
+  raycaster.setFromCamera(pointer, camera)
+  const intersects = raycaster.intersectObjects(meshes)
+  if (intersects.length > 0) {
+    if (INTERSECTED != intersects[0].object) {
+      if (INTERSECTED !== null) {
+        INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
+      }
+      INTERSECTED = intersects[0].object
+      INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex()
+      INTERSECTED.material.emissive.setHex(0xff0000)
+    }
+  } else {
+    if (INTERSECTED)
+      INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
+    INTERSECTED = null
+  }
+
   renderer.render(scene, camera)
-})
+}
 </script>
 <style scoped lang="scss">
 .container {
