@@ -101,7 +101,7 @@ const importModel = () => {
   // 导入模型
   // 注意导入的模型一定要放在public文件夹下
   loader.load(
-    '/model/server1.glb',
+    '/model/server2.glb',
     function (gltf) {
       console.log('模型层级结构：', gltf.scene)
       mesh = gltf.scene
@@ -279,6 +279,7 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
 }
+
 .selected {
   position: absolute;
   background-color: rgba($color: #fff, $alpha: 0.3);
