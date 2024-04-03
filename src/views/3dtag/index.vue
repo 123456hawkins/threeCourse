@@ -25,6 +25,7 @@ let stats0: any
 
 const loader = new GLTFLoader()
 
+
 // 创建射线投射器
 let raycaster: any
 let selectedObjects: any = []
@@ -54,14 +55,18 @@ const addStatsDom = () => {
   stats0.dom.style.position = 'fixed'
   stats0.dom.style.left = '0px'
   stats0.dom.style.top = '60px'
-  document.body.appendChild(stats0.dom)
+  document.querySelector("#app")!!.appendChild(stats0.dom)
 }
 const removeStatsDom = () => {
-  document.body.removeChild(stats0.dom)
+  document.querySelector("#app")!!.removeChild(stats0.dom)
 }
 const onWindowResize = () => {
+  console.log('resize');
+
+
   const width = window.innerWidth
-  const height = window.innerHeight
+  const height = window.innerHeight - 61
+
   camera.aspect = width / height
   camera.updateProjectionMatrix()
   renderer.setSize(width, height)
@@ -93,7 +98,7 @@ const checkIntersection = () => {
 }
 const onPointerMove = (event: any) => {
   pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+  pointer.y = -((event.clientY - 61) / (window.innerHeight - 61)) * 2 + 1
   checkIntersection()
 }
 
@@ -101,7 +106,7 @@ const importModel = () => {
   // 导入模型
   // 注意导入的模型一定要放在public文件夹下
   loader.load(
-    '/model/server2.glb',
+    '/model/xuelangyun.glb',
     function (gltf) {
       console.log('模型层级结构：', gltf.scene)
       mesh = gltf.scene
@@ -144,28 +149,31 @@ const outlineInit = () => {
   renderPass = new RenderPass(scene, camera)
   composer.addPass(renderPass)
   outlinePass = new OutlinePass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    new THREE.Vector2(window.innerWidth, window.innerHeight - 61),
     scene,
     camera
   )
-  outlinePass.visibleEdgeColor.set(0xe15228)
+  outlinePass.visibleEdgeColor.set(0xfa0000)
+  outlinePass.edgeThickness = Number(4);
+  outlinePass.edgeGlow = Number(1);
+  outlinePass.edgeStrength = Number(10);
   composer.addPass(outlinePass)
   const outputPass = new OutputPass()
   composer.addPass(outputPass)
   effectFXAA = new ShaderPass(FXAAShader)
   effectFXAA.uniforms['resolution'].value.set(
     1 / window.innerWidth,
-    1 / window.innerHeight
+    1 / (window.innerHeight - 61)
   )
   composer.addPass(effectFXAA)
 }
 const labelInit = () => {
   labelRenderer = new CSS2DRenderer()
-  labelRenderer.setSize(window.innerWidth, window.innerHeight)
+  labelRenderer.setSize(window.innerWidth, window.innerHeight - 61)
   labelRenderer.domElement.style.position = 'absolute'
   labelRenderer.domElement.style.top = '0px'
   labelRenderer.domElement.style.pointerEvents = 'none'
-  threeContainer.appendChild(labelRenderer.domElement)
+  document.querySelector("#app")!.appendChild(labelRenderer.domElement)
 }
 const createPopupLabel = () => {
   const element = document.createElement('div')
@@ -181,7 +189,7 @@ const updatePopupLabel = (object: any) => {
   const center = boundingBox.getCenter(new THREE.Vector3())
   const screenPosition = center.project(camera)
   const widthHalf = window.innerWidth / 2
-  const heightHalf = window.innerHeight / 2
+  const heightHalf = (window.innerHeight - 61) / 2
   const x = (screenPosition.x * widthHalf + widthHalf) / window.devicePixelRatio
   const y = -(screenPosition.y * heightHalf) + heightHalf
   popupLabel.position.set(x, y, 0)
@@ -196,18 +204,20 @@ const hidePopupLabel = () => {
   popupLabel.element.style.display = 'none'
 }
 const init = () => {
+
+
   // 获取页面dom元素
   threeContainer = document.createElement('div')
-  document.body.appendChild(threeContainer)
+  document.querySelector("#app")!!.appendChild(threeContainer)
 
   // 1、创建场景
   scene = new THREE.Scene()
   scene.background = new THREE.Color(0xc0c0c0)
   camera = new THREE.PerspectiveCamera(
     75,
-    window.innerWidth / window.innerHeight,
+    window.innerWidth / (window.innerHeight - 61),
     0.1,
-    1000
+    7000
   )
   // AxesHelper：辅助观察的坐标系
   axesHelper = new THREE.AxesHelper(150)
@@ -218,7 +228,7 @@ const init = () => {
   scene.add(ambientLight)
 
   // 设置相机位置
-  camera.position.set(10, 10, 10)
+  camera.position.set(3000, 3000, 3000)
   camera.lookAt(0, 0, 0)
   scene.add(camera)
 
@@ -231,7 +241,8 @@ const init = () => {
     logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
   })
   // 设置渲染的尺寸大小
-  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight - 61)
   threeContainer!.appendChild(renderer.domElement)
 
   // 使用渲染器，通过相机将场景渲染进来
@@ -251,6 +262,7 @@ onMounted(() => {
     labelInit()
     createPopupLabel()
     animate()
+
   })
 })
 
@@ -268,18 +280,15 @@ const relaseResource = () => {
   removeStatsDom()
   // 渲染器销毁
   renderer.dispose()
-  document.body.removeChild(threeContainer)
+  document.removeEventListener("click", onPointerMove)
+  window.removeEventListener("resize", onWindowResize)
+  document.querySelector("#app")!.removeChild(threeContainer)
 }
 onUnmounted(() => {
   relaseResource()
 })
 </script>
 <style scoped lang="scss">
-.container {
-  width: 100%;
-  height: 100%;
-}
-
 .selected {
   position: absolute;
   background-color: rgba($color: #fff, $alpha: 0.3);
@@ -287,5 +296,6 @@ onUnmounted(() => {
   padding: 5px;
   border-radius: 5px;
   pointer-events: none;
+  border: 2px solid #000;
 }
 </style>

@@ -98,14 +98,14 @@ const addStatsDom = () => {
   stats0.dom.style.left = '0px'
   stats0.dom.style.top = '60px'
 
-  document.body.appendChild(stats0.dom)
+  document.querySelector("#app")!.appendChild(stats0.dom)
 }
 const removeStatsDom = () => {
-  document.body.removeChild(stats0.dom)
+  document.querySelector("#app")!.removeChild(stats0.dom)
 }
 const domInit = () => {
   threeContainer = document.createElement('div')
-  document.body.appendChild(threeContainer)
+  document.querySelector("#app")!.appendChild(threeContainer)
 }
 onMounted(() => {
   nextTick(() => {
@@ -132,7 +132,7 @@ const relaseResource = () => {
   cubeGeometry.dispose()
   cubeGeometry2.dispose()
   cubeGeometry3.dispose()
-  document.body.removeChild(threeContainer)
+  document.querySelector("#app")!.removeChild(threeContainer)
 }
 onUnmounted(() => {
   relaseResource()

@@ -46,14 +46,14 @@ const addStatsDom = () => {
   stats0.dom.style.position = 'fixed'
   stats0.dom.style.left = '0px'
   stats0.dom.style.top = '60px'
-  document.body.appendChild(stats0.dom)
+  document.querySelector("#app")!.appendChild(stats0.dom)
 }
 const removeStatsDom = () => {
-  document.body.removeChild(stats0.dom)
+  document.querySelector("#app")!.removeChild(stats0.dom)
 }
 const onWindowResize = () => {
   const width = window.innerWidth
-  const height = window.innerHeight
+  const height = window.innerHeight - 61
   camera.aspect = width / height
   camera.updateProjectionMatrix()
   renderer.setSize(width, height)
@@ -80,7 +80,7 @@ const checkIntersection = () => {
 }
 const onPointerMove = (event: any) => {
   pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+  pointer.y = -((event.clientY - 61) / (window.innerHeight - 61)) * 2 + 1
   checkIntersection()
 }
 
@@ -131,7 +131,7 @@ const outlineInit = () => {
   renderPass = new RenderPass(scene, camera)
   composer.addPass(renderPass)
   outlinePass = new OutlinePass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    new THREE.Vector2(window.innerWidth, window.innerHeight - 61),
     scene,
     camera
   )
@@ -142,21 +142,21 @@ const outlineInit = () => {
   effectFXAA = new ShaderPass(FXAAShader)
   effectFXAA.uniforms['resolution'].value.set(
     1 / window.innerWidth,
-    1 / window.innerHeight
+    1 / (window.innerHeight - 61)
   )
   composer.addPass(effectFXAA)
 }
 const init = () => {
   // 获取页面dom元素
   threeContainer = document.createElement('div')
-  document.body.appendChild(threeContainer)
+  document.querySelector("#app")!.appendChild(threeContainer)
 
   // 1、创建场景
   scene = new THREE.Scene()
   scene.background = new THREE.Color(0xc0c0c0)
   camera = new THREE.PerspectiveCamera(
     75,
-    window.innerWidth / window.innerHeight,
+    window.innerWidth / (window.innerHeight - 61),
     0.1,
     1000
   )
@@ -182,7 +182,7 @@ const init = () => {
     logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
   })
   // 设置渲染的尺寸大小
-  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setSize(window.innerWidth, window.innerHeight - 61)
   threeContainer!.appendChild(renderer.domElement)
 
   // 使用渲染器，通过相机将场景渲染进来
@@ -217,7 +217,7 @@ const relaseResource = () => {
   removeStatsDom()
   // 渲染器销毁
   renderer.dispose()
-  document.body.removeChild(threeContainer)
+  document.querySelector("#app")!.removeChild(threeContainer)
 }
 onUnmounted(() => {
   relaseResource()
