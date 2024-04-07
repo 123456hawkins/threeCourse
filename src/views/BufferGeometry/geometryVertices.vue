@@ -4,9 +4,9 @@
 <script setup lang='ts'>
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { ThreeMFLoader } from 'three/examples/jsm/Addons.js';
 import { onMounted, nextTick, onUnmounted } from 'vue';
 
+import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
 let geometry: any, line: any
 let vertices: any
 let scene: any
@@ -16,57 +16,22 @@ let attribue: any
 let renderer: any
 let threeContainer: any
 let animationId: any, controls: any, material: any
-const initGeometry = () => {
-    geometry = new THREE.BufferGeometry()
-    //类型化数组创建顶点数据
-    vertices = new Float32Array([
-        0, 0, 0, //顶点1坐标
-        50, 0, 0, //顶点2坐标
-        0, 100, 0, //顶点3坐标
-
-        0, 0, 0, //顶点4坐标
-        0, 0, 100, //顶点5坐标
-        50, 0, 0, //顶点6坐标
-
-        0, 0, 0,
-        0, 100, 0,
-        0, 0, 100
-    ])
-    // 创建属性缓冲区对象
-    //3个为一组，表示一个顶点的xyz坐标
-    attribue = new THREE.BufferAttribute(vertices, 3)
-    // 设置几何体attributes属性的位置属性
-    geometry.attributes.position = attribue;
-}
-
+let sphere: any
 const init = () => {
 
     threeContainer = document.createElement('div')
     document.querySelector("#app")!.appendChild(threeContainer)
-
-    initGeometry()
+    geometry = new THREE.SphereGeometry(15, 32, 16);
+    geometry.computeVertexNormals()
     scene = new THREE.Scene()
     //面模型 
-    material = new THREE.MeshBasicMaterial({
-        color: 0xff3300, //设置材质颜色
-        side: THREE.FrontSide//默认正面可见，DoubleSide双面可见，BackSide背面可见
-    })
-    let mesh = new THREE.Mesh(geometry, material)
-    mesh.position.set(5, 5, 5)
-    scene.add(mesh)
-
-    // 点模型
-    // material = new THREE.PointsMaterial({ color: 0xffff00, size: 5.0 })
-    // let point = new THREE.Points(geometry, material)
-    // point.position.set(5, 5, 5)
-    // scene.add(point)
-
-    // 线模型
-    // material = new THREE.LineBasicMaterial({ color: 0xff0 })
-    // let line = new THREE.Line(geometry, material)
-    // line.position.set(5, 5, 5)
-    // scene.add(line)
-
+    // wireframe: true可以看到geometry的面几何结构
+    material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
+    sphere = new THREE.Mesh(geometry, material)
+    sphere.position.set(5, 5, 5)
+    scene.add(sphere)
+    const vertexNormalsHelper = new VertexNormalsHelper(sphere, 10, 0xff0000);
+    scene.add(vertexNormalsHelper)
     camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / (window.innerHeight - 60),

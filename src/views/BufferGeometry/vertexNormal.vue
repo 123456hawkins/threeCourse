@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { ThreeMFLoader } from 'three/examples/jsm/Addons.js';
 import { onMounted, nextTick, onUnmounted } from 'vue';
+import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
 
 let geometry: any, line: any
 let vertices: any
@@ -19,24 +20,44 @@ let animationId: any, controls: any, material: any
 const initGeometry = () => {
     geometry = new THREE.BufferGeometry()
     //类型化数组创建顶点数据
+    // vertices = new Float32Array([
+    //     0, 0, 0, //顶点1坐标
+    //     50, 0, 0, //顶点2坐标
+    //     0, 100, 0, //顶点3坐标
+
+    //     0, 0, 0, //顶点4坐标
+    //     0, 0, 100, //顶点5坐标
+    //     50, 0, 0, //顶点6坐标
+
+    //     0, 0, 0,
+    //     0, 100, 0,
+    //     0, 0, 100
+    // ])
+
+    // 可以把重复顶点删除
     vertices = new Float32Array([
         0, 0, 0, //顶点1坐标
         50, 0, 0, //顶点2坐标
         0, 100, 0, //顶点3坐标
 
-        0, 0, 0, //顶点4坐标
         0, 0, 100, //顶点5坐标
-        50, 0, 0, //顶点6坐标
 
-        0, 0, 0,
         0, 100, 0,
-        0, 0, 100
     ])
+    const indexes = new Uint16Array([
+        0, 1, 2,  // 第一个三角形
+        0, 2, 3,   // 第二个三角形
+        0, 3, 1
+    ]);
+
     // 创建属性缓冲区对象
     //3个为一组，表示一个顶点的xyz坐标
     attribue = new THREE.BufferAttribute(vertices, 3)
     // 设置几何体attributes属性的位置属性
     geometry.attributes.position = attribue;
+    geometry.index = new THREE.BufferAttribute(indexes, 1)
+    // 计算顶点法线
+    geometry.computeVertexNormals()
 }
 
 const init = () => {
@@ -48,25 +69,19 @@ const init = () => {
     scene = new THREE.Scene()
     //面模型 
     material = new THREE.MeshBasicMaterial({
-        color: 0xff3300, //设置材质颜色
-        side: THREE.FrontSide//默认正面可见，DoubleSide双面可见，BackSide背面可见
-    })
+        color: 0x0000ff,
+        side: THREE.DoubleSide, //两面可见
+        wireframe: true
+    });
+
     let mesh = new THREE.Mesh(geometry, material)
+
+
     mesh.position.set(5, 5, 5)
     scene.add(mesh)
-
-    // 点模型
-    // material = new THREE.PointsMaterial({ color: 0xffff00, size: 5.0 })
-    // let point = new THREE.Points(geometry, material)
-    // point.position.set(5, 5, 5)
-    // scene.add(point)
-
-    // 线模型
-    // material = new THREE.LineBasicMaterial({ color: 0xff0 })
-    // let line = new THREE.Line(geometry, material)
-    // line.position.set(5, 5, 5)
-    // scene.add(line)
-
+    // 法线可视化
+    const vertexNormalsHelper = new VertexNormalsHelper(mesh, 10, 0xff0000);
+    scene.add(vertexNormalsHelper)
     camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / (window.innerHeight - 60),
@@ -116,6 +131,9 @@ const relaseResource = () => {
 onMounted(() => {
     nextTick(() => {
         init()
+        console.log('几何体', geometry);
+        console.log('顶点位置数据', geometry.attributes.position);
+        console.log('顶点索引数据', geometry.index);
         animate()
     })
 })

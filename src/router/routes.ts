@@ -110,6 +110,42 @@ export const routeList = [
               hidden: false,
             },
           },
+          {
+            path: "/bufferGeometry/verticsIndex",
+            name: "verticsIndex",
+            component: () => import("@/views/BufferGeometry/verticsIndex.vue"),
+            meta: {
+              title: "顶点索引",
+              hidden: false,
+            },
+          },
+          {
+            path: "/bufferGeometry/vertexNormal",
+            name: "vertexNormal",
+            component: () => import("@/views/BufferGeometry/vertexNormal.vue"),
+            meta: {
+              title: "顶点法线",
+              hidden: false,
+            },
+          },
+          {
+            path: "/bufferGeometry/geometryVertices",
+            name: "geometryVertices",
+            component: () => import("@/views/BufferGeometry/geometryVertices.vue"),
+            meta: {
+              title: "几何体顶点",
+              hidden: false,
+            },
+          },
+          {
+            path: "/bufferGeometry/transform",
+            name: "transform",
+            component: () => import("@/views/BufferGeometry/transform.vue"),
+            meta: {
+              title: "物体变换",
+              hidden: false,
+            },
+          },
         ],
       },
       {
