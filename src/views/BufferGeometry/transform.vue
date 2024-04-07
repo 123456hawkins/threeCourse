@@ -69,6 +69,10 @@ const onWindowResize = () => {
 }
 const animate = () => {
     animationId = requestAnimationFrame(animate)
+    sphere.rotation.y += 0.01;
+    sphere.position.x += 0.01
+    sphere.position.y += 0.01
+    sphere.position.z += 0.01
     renderer.render(scene, camera)
 }
 const relaseResource = () => {
