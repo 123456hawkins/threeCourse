@@ -5,35 +5,34 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { onMounted, nextTick, onUnmounted } from 'vue';
-let line: any, sphere: any, cube: any, circle: any
+let line: any, sphere: any, cube: any, circle: any, geometry: any
 let scene: any
 let camera: any
 let axesHelper: any
 let renderer: any
 let threeContainer: any
-let animationId: any, controls: any, basicMaterial: any, LamebertMateiral: any, PhongMaterial: any
-let sphere1: any, sphere2: any, sphere3: any
+let animationId: any, controls: any, basicMaterial: any, LambertMaterial: any, PhongMaterial: any
 let container: any
 let axis: any
 let mesh: any
 const initMaterial = () => {
     const texLoader = new THREE.TextureLoader()
-    const texture = texLoader.load('/texture/earth.jpg')
-    // LamebertMateiral = new THREE.MeshLambertMaterial({ color: 0xf1f3f2 })
-    LamebertMateiral = new THREE.MeshLambertMaterial({ map: texture, side: THREE.DoubleSide, })
+    const texture = texLoader.load('/texture/marble.jpg')
+    // 设置阵列模式
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    // uv两个方向纹理重复数量
+    texture.repeat.set(6, 6);//注意选择合适的阵列数量
+    LambertMaterial = new THREE.MeshLambertMaterial({ map: texture })
 }
-const initSpere = () => {
-    circle = new THREE.CircleGeometry(60, 100)
-    sphere = new THREE.SphereGeometry(60, 25, 25)
-    cube = new THREE.BoxGeometry(100, 100, 100)
-    console.log(sphere.attributes.uv, cube.attributes.uv);
-
+const intiPlane = () => {
+    geometry = new THREE.PlaneGeometry(200, 200);
 }
 const initLight = () => {
     const color = 0xFFFFFF;
     const intensity = 10;
     const light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(100, 100, 100);
+    light.position.set(3000, 3000, 3000);
     light.target.position.set(0, 0, 0);
     scene.add(light);
     scene.add(light.target);
@@ -46,17 +45,13 @@ const init = () => {
     document.querySelector("#allContainer")!.appendChild(threeContainer)
 
     scene = new THREE.Scene()
-    //面模型 
-    // wireframe: true可以看到geometry的面几何结构
-    initSpere()
+    intiPlane()
     initMaterial()
 
 
 
     initLight()
-    mesh = new THREE.Mesh(sphere, LamebertMateiral)
-    // mesh = new THREE.Mesh(cube, LamebertMateiral)
-    // mesh = new THREE.Mesh(circle, LamebertMateiral)
+    mesh = new THREE.Mesh(geometry, LambertMaterial)
     container = new THREE.Group()
     container.add(mesh)
     container.position.set(50, 50, 50)
@@ -66,7 +61,7 @@ const init = () => {
         75,
         window.innerWidth / (window.innerHeight - 60),
         0.1,
-        1000
+        10000
     )
     camera.position.set(350, 350, 350)
     camera.lookAt(0, 0, 0)
@@ -105,7 +100,7 @@ const onWindowResize = () => {
 }
 const animate = () => {
     animationId = requestAnimationFrame(animate)
-    mesh.rotateY(0.01)
+    mesh.rotateX(0.01)
     renderer.render(scene, camera)
 }
 const relaseResource = () => {

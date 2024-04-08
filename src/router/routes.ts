@@ -247,6 +247,26 @@ export const routeList = [
             component:() =>
               import("@/views/textureMap/uvCoordinates.vue"),
           },
+          {
+            path: "/textureMap/textureArray",
+            name: "textureArray",
+            meta: {
+              title: "texture阵列",
+              hidden: false,
+            },
+            component:() =>
+              import("@/views/textureMap/textureArray.vue"),
+          },
+          {
+            path: "/textureMap/transparentTexture",
+            name: "transparentTexture",
+            meta: {
+              title: "透明texture",
+              hidden: false,
+            },
+            component:() =>
+              import("@/views/textureMap/transparentTexture.vue"),
+          },
         ],
       },
       {
