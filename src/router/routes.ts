@@ -131,7 +131,8 @@ export const routeList = [
           {
             path: "/bufferGeometry/geometryVertices",
             name: "geometryVertices",
-            component: () => import("@/views/BufferGeometry/geometryVertices.vue"),
+            component: () =>
+              import("@/views/BufferGeometry/geometryVertices.vue"),
             meta: {
               title: "几何体顶点",
               hidden: false,
@@ -143,6 +144,35 @@ export const routeList = [
             component: () => import("@/views/BufferGeometry/transform.vue"),
             meta: {
               title: "物体变换",
+              hidden: false,
+            },
+          },
+        ],
+      },
+      {
+        path: "/modelMaterial",
+        name: "modelMaterial",
+        meta: {
+          title: "模型对象,材质",
+          hidden: false,
+        },
+        redirect: "/modelMaterial/euler",
+        children: [
+          {
+            path: "/modelMaterial/euler",
+            name: "euler",
+            component: () => import("@/views/modelMaterial/euler.vue"),
+            meta: {
+              title: "欧拉Euler与角度属性.rotation",
+              hidden: false,
+            },
+          },
+          {
+            path: "/modelMaterial/material",
+            name: "material",
+            component: () => import("@/views/modelMaterial/material.vue"),
+            meta: {
+              title: "material",
               hidden: false,
             },
           },

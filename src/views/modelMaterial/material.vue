@@ -9,16 +9,28 @@ import { onMounted, nextTick, onUnmounted } from 'vue';
 import { ArrowHelper } from 'three/src/Three.js';
 
 let geometry: any, line: any
-let vertices: any
 let scene: any
 let camera: any
 let axesHelper: any
-let attribue: any
 let renderer: any
 let threeContainer: any
-let animationId: any, controls: any, material: any
-let sphere: any
+let animationId: any, controls: any, basicMaterial: any, LamebertMateiral: any, PhongMaterial: any
+let sphere1: any, sphere2: any, sphere3: any
 let axis: any
+const initMaterial = () => {
+    basicMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    LamebertMateiral = new THREE.MeshLambertMaterial({ color: 0xf1f3f2 })
+    PhongMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+}
+const initLight = () => {
+    const color = 0xFFFFFF;
+    const intensity = 10;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(100, 100, 100);
+    light.target.position.set(0, 0, 0);
+    scene.add(light);
+    scene.add(light.target);
+}
 const init = () => {
 
     threeContainer = document.createElement('div')
@@ -28,12 +40,23 @@ const init = () => {
     scene = new THREE.Scene()
     //面模型 
     // wireframe: true可以看到geometry的面几何结构
-    material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
-    sphere = new THREE.Mesh(geometry, material)
-    sphere.position.set(0, 0, 0)
-    scene.add(sphere)
-    // const vertexNormalsHelper = new VertexNormalsHelper(sphere, 10, 0xff0000);
-    // scene.add(vertexNormalsHelper)
+    initMaterial()
+    sphere1 = new THREE.Mesh(geometry, basicMaterial)
+    sphere2 = new THREE.Mesh(geometry, LamebertMateiral)
+    sphere3 = new THREE.Mesh(geometry, PhongMaterial)
+    let cloneSphere = sphere3.clone()
+
+    sphere1.position.set(0, 0, 0)
+    sphere2.position.set(50, 0, 0)
+    sphere3.position.set(0, 50, 0)
+    cloneSphere.position.set(0, 0, 50)
+
+    scene.add(sphere1)
+    scene.add(sphere2)
+    scene.add(sphere3)
+    scene.add(cloneSphere)
+
+    initLight()
     camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / (window.innerHeight - 60),
@@ -84,7 +107,8 @@ const onWindowResize = () => {
 const animate = () => {
     animationId = requestAnimationFrame(animate)
 
-    sphere.translateOnAxis(axis, 0.01)
+    // sphere.translateOnAxis(axis, 0.01)
+    // sphere.rotateOnAxis(axis, Math.PI / 31.4)
     // sphere.rotation.y += 0.01;
 
     renderer.render(scene, camera)

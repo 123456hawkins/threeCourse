@@ -71,7 +71,6 @@ const init = () => {
     material = new THREE.MeshBasicMaterial({
         color: 0x0000ff,
         side: THREE.DoubleSide, //两面可见
-        wireframe: true
     });
 
     let mesh = new THREE.Mesh(geometry, material)

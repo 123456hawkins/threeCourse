@@ -85,6 +85,7 @@ const animate = () => {
     animationId = requestAnimationFrame(animate)
 
     sphere.translateOnAxis(axis, 0.01)
+    sphere.rotateOnAxis(axis, Math.PI / 31.4)
     // sphere.rotation.y += 0.01;
 
     renderer.render(scene, camera)
