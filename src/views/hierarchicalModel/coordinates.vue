@@ -7,8 +7,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { onMounted, nextTick, onUnmounted } from 'vue';
 
 import { ArrowHelper } from 'three/src/Three.js';
+import { log } from 'console';
 
-let geometry: any, line: any
+let line: any, cube: any
 let scene: any
 let camera: any
 let axesHelper: any
@@ -17,10 +18,14 @@ let threeContainer: any
 let animationId: any, controls: any, basicMaterial: any, LamebertMateiral: any, PhongMaterial: any
 let sphere1: any, sphere2: any, sphere3: any
 let axis: any
+let group1: any
 const initMaterial = () => {
     basicMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
     LamebertMateiral = new THREE.MeshLambertMaterial({ color: 0xf1f3f2 })
     PhongMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+}
+const initCube = () => {
+    cube = new THREE.BoxGeometry(20, 20, 20)
 }
 const initLight = () => {
     const color = 0xFFFFFF;
@@ -31,39 +36,55 @@ const initLight = () => {
     scene.add(light);
     scene.add(light.target);
 }
+const initGroup = () => {
+    group1 = new THREE.Group()
+    group1.name = '高层'
+
+    const mesh = new THREE.Mesh(cube, PhongMaterial)
+    // 这里设置position是设置子对象在group1坐标系中的position，并不是真实世界的position
+    mesh.position.set(50, 50, 0)
+
+    group1.add(mesh)
+
+    group1.position.set(100, 100, 100)
+    // 获取世界坐标
+    const worldPosition = new THREE.Vector3()
+    mesh.getWorldPosition(worldPosition)
+    console.log('世界坐标', worldPosition);
+    console.log('本地坐标', mesh.position);
+    // 添加局部坐标系
+    const meshAxesHelper = new THREE.AxesHelper(50)
+    group1.add(meshAxesHelper)
+
+
+}
 const init = () => {
 
     threeContainer = document.createElement('div')
     document.querySelector("#app")!.appendChild(threeContainer)
-    geometry = new THREE.SphereGeometry(15, 32, 16);
-    geometry.computeVertexNormals()
+
     scene = new THREE.Scene()
     //面模型 
     // wireframe: true可以看到geometry的面几何结构
+    initCube()
     initMaterial()
-    sphere1 = new THREE.Mesh(geometry, basicMaterial)
-    sphere2 = new THREE.Mesh(geometry, LamebertMateiral)
-    sphere3 = new THREE.Mesh(geometry, PhongMaterial)
-    let cloneSphere = sphere3.clone()
 
-    sphere1.position.set(0, 0, 0)
-    sphere2.position.set(50, 0, 0)
-    sphere3.position.set(0, 50, 0)
-    cloneSphere.position.set(0, 0, 50)
 
-    scene.add(sphere1)
-    scene.add(sphere2)
-    scene.add(sphere3)
-    scene.add(cloneSphere)
 
     initLight()
+    initGroup()
+    scene.add(group1)
+
+
+
+    // nameNode.material.color.set(0xfff000);
     camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / (window.innerHeight - 60),
         0.1,
         1000
     )
-    camera.position.set(60, 60, 60)
+    camera.position.set(150, 150, 150)
     camera.lookAt(0, 0, 0)
     scene.add(camera)
 
@@ -71,12 +92,6 @@ const init = () => {
     // 创建一个表示方向的向量
     axis = new THREE.Vector3(10, 10, 10);
     axis.normalize(); // 向量归一化
-
-    // 创建一个箭头帮助器对象
-    // 必须要normalize才能使用arrowHelper
-    const arrowHelper = new THREE.ArrowHelper(axis, new THREE.Vector3(0, 0, 0), 200, 0xff0000); // 参数分别为：方向向量、箭头起点、箭头长度、箭头颜色
-    // 将箭头帮助器添加到场景中
-    scene.add(arrowHelper);
 
 
     axesHelper = new THREE.AxesHelper(150)
@@ -106,6 +121,8 @@ const onWindowResize = () => {
 }
 const animate = () => {
     animationId = requestAnimationFrame(animate)
+    group1.rotateY(0.01)
+
     renderer.render(scene, camera)
 }
 const relaseResource = () => {

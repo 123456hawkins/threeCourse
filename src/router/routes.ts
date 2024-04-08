@@ -1,3 +1,4 @@
+
 export const routeList = [
   {
     path: "/",
@@ -175,6 +176,76 @@ export const routeList = [
               title: "material",
               hidden: false,
             },
+          },
+        ],
+      },
+      {
+        path: "/hierarchicalModel",
+        name: "hierarchicalModel",
+        meta: {
+          title: "层级模型",
+          hidden: false,
+        },
+        redirect: "/hierarchicalModel/group",
+        children: [
+          {
+            path: "/hierarchicalModel/group",
+            name: "group",
+            meta: {
+              title: "group",
+              hidden: false,
+            },
+            component: () => import("@/views/hierarchicalModel/group.vue"),
+          },
+          {
+            path: "/hierarchicalModel/group2",
+            name: "group2",
+            meta: {
+              title: "group2",
+              hidden: false,
+            },
+            component: () => import("@/views/hierarchicalModel/group2.vue"),
+          },
+          {
+            path: "/hierarchicalModel/coordinates",
+            name: "coordinates",
+            meta: {
+              title: "coordinates",
+              hidden: false,
+            },
+            component: () =>
+              import("@/views/hierarchicalModel/coordinates.vue"),
+          },
+        ],
+      },
+      {
+        path: "/textureMap",
+        name: "textureMap",
+        meta: {
+          title: "顶点uv坐标和纹理贴图",
+          hidden: false,
+        },
+        redirect: "/textureMap/earth",
+        children: [
+          {
+            path: "/textureMap/earth",
+            name: "earth",
+            meta: {
+              title: "earth",
+              hidden: false,
+            },
+            component:() =>
+              import("@/views/textureMap/earth.vue"),
+          },
+          {
+            path: "/textureMap/uvCoordinates",
+            name: "uvCoordinates",
+            meta: {
+              title: "uv坐标",
+              hidden: false,
+            },
+            component:() =>
+              import("@/views/textureMap/uvCoordinates.vue"),
           },
         ],
       },

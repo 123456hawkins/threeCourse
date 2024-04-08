@@ -1,18 +1,20 @@
 <template>
-  <div class="container">
+  <div class="container" id="allContainer">
     <div class="menuContainer">
-      <el-menu class="el-menu-demo" :router="true" :default-active="$route.path" active-text-color="#12100d"
-        background-color="#f3f3f3" text-color="#000000" menu-trigger="click" mode="horizontal">
+      <el-menu class="el-menu-demo" :router="true" :ellipsis="true" :default-active="$route.path"
+        active-text-color="#12100d" background-color="#f3f3f3" text-color="#000000" mode="horizontal">
         <Menu :menuList="routeList[0].children"></Menu>
       </el-menu>
     </div>
-    <div class="routerViewContainer">
-      <router-view v-slot="{ Component }">
-        <transition name="fade">
-          <component :is="Component"></component>
-        </transition>
-      </router-view>
-    </div>
+
+
+
+    <router-view v-slot="{ Component }">
+      <transition name="fade">
+        <component :is="Component"></component>
+      </transition>
+    </router-view>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -34,7 +36,7 @@ onMounted(() => {
   width: 100%;
 
   .menuContainer {
-    height: 10%;
+    height: 60px;
     box-sizing: border-box;
   }
 

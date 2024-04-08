@@ -17,6 +17,7 @@ let threeContainer: any
 let animationId: any, controls: any, basicMaterial: any, LamebertMateiral: any, PhongMaterial: any
 let sphere1: any, sphere2: any, sphere3: any
 let axis: any
+let group: any
 const initMaterial = () => {
     basicMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
     LamebertMateiral = new THREE.MeshLambertMaterial({ color: 0xf1f3f2 })
@@ -51,11 +52,14 @@ const init = () => {
     sphere3.position.set(0, 50, 0)
     cloneSphere.position.set(0, 0, 50)
 
-    scene.add(sphere1)
-    scene.add(sphere2)
-    scene.add(sphere3)
+    group = new THREE.Group()
+    group.add(sphere1)
+    group.add(sphere2)
+    group.add(sphere3)
     scene.add(cloneSphere)
+    scene.add(group)
 
+    group.translateY(100)
     initLight()
     camera = new THREE.PerspectiveCamera(
         75,
@@ -106,6 +110,8 @@ const onWindowResize = () => {
 }
 const animate = () => {
     animationId = requestAnimationFrame(animate)
+    // group一起旋转
+    group.rotateY(Math.PI / 60)
     renderer.render(scene, camera)
 }
 const relaseResource = () => {
