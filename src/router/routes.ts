@@ -313,6 +313,56 @@ export const routeList = [
         ],
       },
       {
+        path: "/rendererUI",
+        name: "rendererUI",
+        meta: {
+          title: "渲染器和canvas交互",
+          hidden: false,
+        },
+        redirect: "/rendererUI/deepConflict",
+        children: [
+          {
+            path: "/rendererUI/deepConflict",
+            name: "deepConflict",
+            meta: {
+              title: "深度冲突",
+              hidden: false,
+            },
+            component: () => import("@/views/rendererUI/deepConflict.vue"),
+          },
+          {
+            path: "/rendererUI/loadingBar",
+            name: "loadingBar",
+            meta: {
+              title: "模型加载条",
+              hidden: false,
+            },
+            component: () => import("@/views/rendererUI/loadingBar.vue"),
+          },
+        ],
+      },
+      {
+        path: "/curveGeometry",
+        name: "curveGeometry",
+        meta: {
+          title: "生成曲线、几何体",
+          hidden: false,
+        },
+        redirect: "/curveGeometry/vertices",
+        children: [
+          {
+            path: "/curveGeometry/vertices",
+            name: "vertices",
+            meta: {
+              title: "圆弧顶点",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/vertices.vue"),
+          },
+          
+        ],
+      },
+      {
         path: "/outline",
         name: "outline",
         component: () => import("@/views/outline/index.vue"),

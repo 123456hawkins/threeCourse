@@ -1,4 +1,5 @@
 <template>
+    <button style="position: absolute;" @click="saveFile">保存渲染的图片</button>
 </template>
 
 <script setup lang='ts'>
@@ -6,17 +7,24 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { onMounted, nextTick, onUnmounted } from 'vue';
 import { FlakesTexture } from 'three/addons/textures/FlakesTexture.js';
-import * as dat from 'dat.gui'
-const gui = new dat.GUI()
+
 let scene: any
 let camera: any
 let axesHelper: any
 let renderer: any
 let threeContainer: any
 let animationId: any, controls: any
-let physicalMaterial: any
 let particleLight: any;
 let group: any
+const saveFile = () => {
+    // 创建一个超链接元素，用来下载保存数据的文件
+    const link = document.createElement('a');
+    // 通过超链接herf属性，设置要保存到文件中的数据
+    const canvas = renderer.domElement; //获取canvas对象
+    link.href = canvas.toDataURL("image/png");
+    link.download = 'pic.png';//下载文件名
+    link.click();//js代码触发超链接元素a的鼠标点击事件，开始下载文件到本地
+}
 // 加载环境贴图
 const initTexture = () => {
     // 加载环境贴图
@@ -45,6 +53,8 @@ const initTexture = () => {
 
         const normalMap2 = textureLoader.load('/texture/water/Water_1_M_Normal.jpg');
 
+        // FlakesTexture 生成了一种雪花或者类似的纹理
+        // CanvasTexture 是一种通过绘制 2D 图形或者图像来创建纹理的方法
         const normalMap3 = new THREE.CanvasTexture(new FlakesTexture());
         normalMap3.wrapS = THREE.RepeatWrapping;
         normalMap3.wrapT = THREE.RepeatWrapping;
@@ -148,7 +158,6 @@ const init = () => {
     //面模型 
     // wireframe: true可以看到geometry的面几何结构
     initTexture()
-    // initGui()
 
     initLight()
 
@@ -168,7 +177,10 @@ const init = () => {
     renderer = new THREE.WebGLRenderer({
         antialias: true, // 是否执行抗锯齿。默认为false
         logarithmicDepthBuffer: true, // 是否使用对数深度缓存。如果要在单个场景中处理巨大的比例差异，就有必要使用。
+        //想把canvas画布上内容下载到本地，需要设置为true
+        preserveDrawingBuffer: true,
     })
+    renderer.setClearAlpha(0.0);
     // 设置渲染的尺寸大小
     renderer.setSize(window.innerWidth, window.innerHeight - 61)
     threeContainer!.appendChild(renderer.domElement)
@@ -198,7 +210,6 @@ const animate = () => {
     for (let i = 0; i < group.children.length; i++) {
         const child = group.children[i]
         child.rotation.y += .005
-
     }
     renderer.render(scene, camera)
 }
@@ -223,4 +234,4 @@ onUnmounted(() => {
 })
 </script>
 
-<style></style>
+<style></style>import type { link } from 'fs';
