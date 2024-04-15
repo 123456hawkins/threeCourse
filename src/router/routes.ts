@@ -1,4 +1,3 @@
-
 export const routeList = [
   {
     path: "/",
@@ -234,8 +233,7 @@ export const routeList = [
               title: "earth",
               hidden: false,
             },
-            component:() =>
-              import("@/views/textureMap/earth.vue"),
+            component: () => import("@/views/textureMap/earth.vue"),
           },
           {
             path: "/textureMap/uvCoordinates",
@@ -244,8 +242,7 @@ export const routeList = [
               title: "uv坐标",
               hidden: false,
             },
-            component:() =>
-              import("@/views/textureMap/uvCoordinates.vue"),
+            component: () => import("@/views/textureMap/uvCoordinates.vue"),
           },
           {
             path: "/textureMap/textureArray",
@@ -254,8 +251,7 @@ export const routeList = [
               title: "texture阵列",
               hidden: false,
             },
-            component:() =>
-              import("@/views/textureMap/textureArray.vue"),
+            component: () => import("@/views/textureMap/textureArray.vue"),
           },
           {
             path: "/textureMap/transparentTexture",
@@ -264,8 +260,55 @@ export const routeList = [
               title: "透明texture",
               hidden: false,
             },
-            component:() =>
+            component: () =>
               import("@/views/textureMap/transparentTexture.vue"),
+          },
+        ],
+      },
+      {
+        path: "/pbrMaterial",
+        name: "pbrMaterial",
+        meta: {
+          title: "pbr材质和纹理贴图",
+          hidden: false,
+        },
+        redirect: "/pbrMaterial/pbr",
+        children: [
+          {
+            path: "/pbrMaterial",
+            name: "pbrMaterial",
+            meta: {
+              title: "pbr材质和纹理贴图",
+              hidden: false,
+            },
+            component: () => import("@/views/pbrMaterial/pbr.vue"),
+          },
+          {
+            path: "/pbrMaterial/envMap",
+            name: "envMap",
+            meta: {
+              title: "环境贴图",
+              hidden: false,
+            },
+            component: () => import("@/views/pbrMaterial/envMap.vue"),
+          },
+          {
+            path: "/pbrMaterial/physicsMaterial",
+            name: "physicsMaterial",
+            meta: {
+              title: "physics材质",
+              hidden: false,
+            },
+            component: () => import("@/views/pbrMaterial/physicsMaterial.vue"),
+          },
+          {
+            path: "/pbrMaterial/officalCase",
+            name: "officalCase",
+            meta: {
+              title: "官网例子",
+              hidden: false,
+            },
+            component: () => import("@/views/pbrMaterial/officalCase.vue"),
           },
         ],
       },

@@ -5,37 +5,62 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { onMounted, nextTick, onUnmounted } from 'vue';
-let line: any, sphere: any, cube: any, circle: any, geometry: any
+import * as dat from 'dat.gui'
+const gui = new dat.GUI()
+
+let line: any, sphere: any, cube: any
 let scene: any
 let camera: any
 let axesHelper: any
 let renderer: any
 let threeContainer: any
-let animationId: any, controls: any, basicMaterial: any, LambertMaterial: any, PhongMaterial: any
+let animationId: any, controls: any, basicMaterial: any, LamebertMateiral: any, PhongMaterial: any
+let sphere1: any, sphere2: any, sphere3: any
 let container: any
 let axis: any
 let mesh: any
-let texture: any
-const initMaterial = () => {
-    const texLoader = new THREE.TextureLoader()
-    texture = texLoader.load('/texture/compass.png')
-    // 设置透明
-    // LambertMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
-    // texture.offset.x += 0.5
-    // texture.offset.y += 0.5;//纹理V方向偏移
-    texture.wrapS = THREE.RepeatWrapping
-    texture.wrapT = THREE.RepeatWrapping
-    LambertMaterial = new THREE.MeshStandardMaterial({ map: texture, alphaMap: texture, transparent: true });
-
+let standardMaterial: any
+const materialObj = {
+    color: 0x11ff00,
+    metalness: 1,
+    roughness: 0.2
 }
-const intiPlane = () => {
-    geometry = new THREE.PlaneGeometry(60, 60);
+const initGui = () => {
+    gui.domElement.style.position = 'fixed'
+    gui.domElement.style.right = '0px'
+    gui.domElement.style.top = '60px'
+    const standardMaterialFolder = gui.addFolder('standardMaterial')
+    standardMaterialFolder.addColor(materialObj, 'color').onChange((value: any) => {
+        standardMaterial.color.set(value)
+        renderer.render(scene, camera)
+    })
+    // 添加 roughness 控制器
+    standardMaterialFolder.add(materialObj, 'metalness', 0, 1).onChange((value: any) => {
+        standardMaterial.metalness = value
+        renderer.render(scene, camera)
+    })
+    // 添加 roughness 控制器
+    standardMaterialFolder.add(materialObj, 'roughness', 0, 1).onChange((value: any) => {
+        standardMaterial.roughness = value
+        renderer.render(scene, camera)
+    })
+}
+const initMaterial = () => {
+    standardMaterial = new THREE.MeshStandardMaterial({
+        color: 0x11ff00,
+        metalness: 1,
+        roughness: 0.2,
+    })
+}
+const initSpere = () => {
+    sphere = new THREE.SphereGeometry(60, 25, 25)
+    cube = new THREE.BoxGeometry(100, 100, 100)
 }
 const initLight = () => {
     const color = 0xFFFFFF;
     const intensity = 10;
     const light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(300, 300, 300);
+    light.position.set(100, 100, 100);
     light.target.position.set(0, 0, 0);
     scene.add(light);
     scene.add(light.target);
@@ -48,26 +73,26 @@ const init = () => {
     document.querySelector("#allContainer")!.appendChild(threeContainer)
 
     scene = new THREE.Scene()
-    intiPlane()
+    //面模型 
+    // wireframe: true可以看到geometry的面几何结构
+    initSpere()
     initMaterial()
 
-
+    initGui()
 
     initLight()
-    mesh = new THREE.Mesh(geometry, LambertMaterial)
+    mesh = new THREE.Mesh(sphere, standardMaterial)
+
     container = new THREE.Group()
     container.add(mesh)
     container.position.set(50, 50, 50)
     scene.add(container)
 
-    // 添加地面辅助线
-    const gridHelper = new THREE.GridHelper(600, 25, 0x004444, 0x004444)
-    scene.add(gridHelper)
     camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / (window.innerHeight - 60),
         0.1,
-        10000
+        1000
     )
     camera.position.set(350, 350, 350)
     camera.lookAt(0, 0, 0)
@@ -106,10 +131,7 @@ const onWindowResize = () => {
 }
 const animate = () => {
     animationId = requestAnimationFrame(animate)
-    texture.offset.x += 0.01
-    texture.offset.y += 0.01
-    // 让mesh始终看向摄像机
-    mesh.lookAt(camera.position)
+    mesh.rotateY(0.01)
     renderer.render(scene, camera)
 }
 const relaseResource = () => {
