@@ -106,7 +106,7 @@ const importModel = () => {
   // 导入模型
   // 注意导入的模型一定要放在public文件夹下
   loader.load(
-    '/model/xuelangyun.glb',
+    '/model/server1.glb',
     function (gltf) {
       console.log('模型层级结构：', gltf.scene)
       mesh = gltf.scene

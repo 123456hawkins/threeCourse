@@ -359,7 +359,96 @@ export const routeList = [
             },
             component: () => import("@/views/curveGeometry/vertices.vue"),
           },
-          
+          {
+            path: "/curveGeometry/spline",
+            name: "spline",
+            meta: {
+              title: "样条曲线",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/spline.vue"),
+          },
+          {
+            path: "/curveGeometry/BezierCurve",
+            name: "BezierCurve",
+            meta: {
+              title: "贝塞尔曲线",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/BezierCurve.vue"),
+          },
+          {
+            path: "/curveGeometry/combinationCurve",
+            name: "combinationCurve",
+            meta: {
+              title: "组合曲线",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/combinationCurve.vue"),
+          },
+          {
+            path: "/curveGeometry/tubeGeometry",
+            name: "tubeGeometry",
+            meta: {
+              title: "曲线路径管道",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/tubeGeometry.vue"),
+          },
+          {
+            path: "/curveGeometry/latheGeometry",
+            name: "latheGeometry",
+            meta: {
+              title: "旋转成型",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/latheGeometry.vue"),
+          },
+          {
+            path: "/curveGeometry/shapeGeometry",
+            name: "shapeGeometry",
+            meta: {
+              title: "轮廓填充,拉伸,扫描",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/shape.vue"),
+          },
+          {
+            path: "/curveGeometry/shape",
+            name: "shape",
+            meta: {
+              title: "多边形,圆弧,孔洞shape",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/shape.vue"),
+          },
+          {
+            path: "/curveGeometry/edgesGeometry",
+            name: "edgesGeometry",
+            meta: {
+              title: "模型边际线",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/edgesGeometry.vue"),
+          },
+          {
+            path: "/curveGeometry/verticesColor",
+            name: "verticesColor",
+            meta: {
+              title: "顶点颜色数据",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/verticesColor.vue"),
+          },
+          {
+            path: "/curveGeometry/gltfVertices",
+            name: "gltfVertices",
+            meta: {
+              title: "查看模型顶点数据",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/gltfVertices.vue"),
+          },
         ],
       },
       {

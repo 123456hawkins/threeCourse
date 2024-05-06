@@ -14,8 +14,9 @@ let threeContainer: any
 let animationId: any, controls: any
 let container: any
 let mesh: any, carMesh: any
-let physicalMaterial: any, lineMaterial: any
+let lineMaterial: any
 let textureCube: any
+let arc: any
 // 加载环境贴图
 const initTexture = () => {
     // 加载环境贴图
@@ -29,35 +30,26 @@ const initTexture = () => {
     // textureCube.encoding = THREE.sRGBEncoding;
 }
 const initMaterial = () => {
-    physicalMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        metalness: 1,
-        roughness: 0.0,
-        envMapIntensity: 1.0,
-        clearcoat: 1.0,
-        clearcoatRoughness: 1.0,
-        reflectivity: 1.0,
-        sheen: 1.0,
-        ior: 1.0,//折射率
-        transmission: 1.0,//透光率
-        side: THREE.DoubleSide
-    })
+
     lineMaterial = new THREE.LineBasicMaterial({
         color: 0xff0000 //线条颜色
     });
 }
 const initGeometry = () => {
-    sphere = new THREE.SphereGeometry(20, 50, 50)
     geometry = new THREE.BufferGeometry()
-    const R = 10//圆弧半径
-    const N = 50//分段数量
-    const sp = 2 * Math.PI / N//两个相邻点间隔弧度
+    const R = 50//圆弧半径
+    const N = 500//分段数量
+    const sp = 2 * Math.PI / N//两个相邻点间隔弧度,完整圆弧
+    // const sp = 1 * Math.PI / N;//半圆弧
+    // 设置圆心坐标
+    const cx = 10
+    const cy = 20
     const arr = []
     for (let i = 0; i < N; i++) {
         const angle = sp * i//当前顶点弧度
         // 以坐标原点为中心，在XOY平面上生成圆弧上的顶点数据
-        const x = R * Math.cos(angle);
-        const y = R * Math.sin(angle);
+        const x = cx + R * Math.cos(angle);
+        const y = cy + R * Math.sin(angle);
         arr.push(x, y, 0);
     }
     // 类型数组创建顶点数据
@@ -67,6 +59,13 @@ const initGeometry = () => {
     const attribue = new THREE.BufferAttribute(vertices, 3);
     // 设置几何体attributes属性的位置属性
     geometry.attributes.position = attribue;
+
+    // 椭圆
+    arc = new THREE.EllipseCurve(0, 0, 100, 50)
+    //参数：0, 0圆弧坐标原点x，y  100：圆弧半径    0, 2 * Math.PI：圆弧起始角度
+    arc = new THREE.ArcCurve(0, 0, 100, 0, 2 * Math.PI);
+    console.log('曲线坐标', arc.getPoints(50));
+    console.log('曲线等长坐标', arc.getSpacedPoints(50));
 
 }
 const initLight = () => {
@@ -93,17 +92,14 @@ const init = () => {
     initMaterial()
 
     initLight()
-    mesh = new THREE.Mesh(sphere, physicalMaterial)
     line = new THREE.LineLoop(geometry, lineMaterial)
-
     // 如果你希望环境贴图影响场景中scene所有Mesh，可以通过Scene的场景环境属性.environment实现,把环境贴图对应纹理对象设置为.environment的属性值即可。
     scene.environment = textureCube
     scene.background = textureCube
     container = new THREE.Group()
-    container.add(mesh)
-    container.position.set(5, 5, 5)
-    // scene.add(container)
-    scene.add(line)
+    container.add(line)
+    // container.position.set(5, 5, 5)
+    scene.add(container)
 
     camera = new THREE.PerspectiveCamera(
         75,
@@ -145,7 +141,7 @@ const onWindowResize = () => {
 }
 const animate = () => {
     animationId = requestAnimationFrame(animate)
-    mesh.rotateY(0.01)
+
     renderer.render(scene, camera)
 }
 const relaseResource = () => {

@@ -42,7 +42,7 @@ const importModel = () => {
     //         percentage.value = xhr.loaded / xhr.total
     //     }
     // )
-    loader.load("/model/xuelangyun.glb", function (gltf) {
+    loader.load("/model/server1.glb", function (gltf) {
         // loading.close()
         console.log(gltf);
         scene.add(gltf.scene)
