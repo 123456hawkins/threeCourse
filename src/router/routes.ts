@@ -449,6 +449,15 @@ export const routeList = [
             },
             component: () => import("@/views/curveGeometry/gltfVertices.vue"),
           },
+          {
+            path: "/curveGeometry/mountainVisual",
+            name: "mountainVisual",
+            meta: {
+              title: "山体可视化",
+              hidden: false,
+            },
+            component: () => import("@/views/curveGeometry/mountainVisual.vue"),
+          },
         ],
       },
       {

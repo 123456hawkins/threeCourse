@@ -5,6 +5,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { onMounted, nextTick, onUnmounted } from 'vue';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+
 let scene: any
 let camera: any
 let axesHelper: any
@@ -13,7 +15,8 @@ let threeContainer: any
 let animationId: any, controls: any
 let container: any
 let lineMaterial: any, pointMaterial: any, meshMaterial: any
-let textureCube: any
+let textureCube: any, mesh: any
+const loader = new GLTFLoader()
 // 加载环境贴图
 const initTexture = () => {
     // 加载环境贴图
@@ -37,8 +40,31 @@ const initMaterial = () => {
     meshMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })
 }
 
-const initGeometry = () => {
+const importModel = () => {
+    loader.load('/model/server1.glb', function (gltf) {
+        console.log('gltf', gltf.scene.children[5]);
+        mesh = gltf.scene.children[3]
+        mesh.position.set(0, 5, 0)
+        mesh.scale.set(5, 5, 5)
+        scene.add(mesh)
+        // mesh.scale.set(0.1, 0.1, 0.1)
+        mesh.scale.set(50, 50, 50)
 
+        // // 顶点数据
+        const att = mesh.geometry.attributes;
+        console.log('att', att);
+        // // 顶点位置数据
+        const pos = mesh.geometry.attributes.position;
+        console.log('pos', pos);
+        console.log('顶点数量：', pos.count);
+        // 获取第一个顶点的x轴位置
+        const x = pos.getX(0)
+        console.log('x位置', x);
+        // 设置第一个顶点的X轴位置
+        pos.setX(23, 2)
+        pos.setY(23, 2)
+        pos.setZ(23, 2)
+    })
 
 }
 const initLight = () => {
@@ -61,25 +87,29 @@ const init = () => {
     //面模型 
     // wireframe: true可以看到geometry的面几何结构
 
-    initGeometry()
+
 
     initTexture()
+    importModel()
     initMaterial()
 
     initLight()
     // 如果你希望环境贴图影响场景中scene所有Mesh，可以通过Scene的场景环境属性.environment实现,把环境贴图对应纹理对象设置为.environment的属性值即可。
     scene.environment = textureCube
     scene.background = textureCube
-    container = new THREE.Group()
-    // container.position.set(5, 5, 5)
-    scene.add(container)
+    // camera = new THREE.PerspectiveCamera(
+    //     75,
+    //     window.innerWidth / (window.innerHeight - 60),
+    //     1,
+    //     1000
+    // )
     camera = new THREE.PerspectiveCamera(
         75,
-        window.innerWidth / (window.innerHeight - 60),
+        window.innerWidth / (window.innerHeight - 61),
         0.1,
-        500
+        7000
     )
-    camera.position.set(0, 0, 200)
+    camera.position.set(300, 300, 300)
     camera.lookAt(0, 0, 0)
     scene.add(camera)
 
